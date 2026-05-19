@@ -46,15 +46,15 @@ const Navbar = () => {
     >
       <nav
         className={`mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-6 lg:px-8 ${
-          scrolled ? "py-2" : "py-3 md:py-5"
+          scrolled ? "py-1" : "py-2 md:py-3"
         }`}
       >
         <Link to="/" className="flex items-center">
           <img
             src={logo}
             alt="SportNest Logo"
-            className={`w-auto object-contain drop-shadow-[0_0_18px_rgba(34,197,94,0.7)] transition-all duration-500 hover:scale-105 ${
-              scrolled ? "h-12 sm:h-14 md:h-16" : "h-16 sm:h-20 md:h-24"
+            className={`w-auto object-contain drop-shadow-[0_0_20px_rgba(34,197,94,0.75)] transition-all duration-500 hover:scale-105 ${
+              scrolled ? "h-14 sm:h-16 md:h-20" : "h-20 sm:h-24 md:h-28"
             }`}
           />
         </Link>

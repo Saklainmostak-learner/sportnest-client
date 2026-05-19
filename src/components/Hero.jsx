@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CalendarCheck,
-  Dumbbell,
   Headphones,
   MapPin,
   ShieldCheck,
   Star,
   Trophy,
-  Waves,
   Zap,
-  CircleDot,
 } from "lucide-react";
 import { IoIosFootball, IoIosTennisball } from "react-icons/io";
 import { PiPersonSimpleSwimFill } from "react-icons/pi";
@@ -87,6 +84,7 @@ const sports = [
 
 const Hero = () => {
   const [active, setActive] = useState(0);
+
   const current = sports[active];
   const CurrentIcon = current.icon;
 
@@ -133,7 +131,7 @@ const Hero = () => {
       <div className="energy-line energy-line-2" />
       <div className="energy-line energy-line-3" />
 
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 pb-10 pt-32 sm:px-6 md:pt-40 lg:px-8">
+      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 pb-8 pt-28 sm:px-6 md:pt-32 lg:px-8 xl:pt-36">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <motion.div
             key={`text-${current.name}`}
@@ -148,9 +146,11 @@ const Hero = () => {
               {current.name}
             </div>
 
-            <h1 className="max-w-3xl text-5xl font-black uppercase leading-[0.98] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
+            <h1 className="max-w-3xl text-4xl font-black uppercase leading-[1] tracking-tight sm:text-5xl md:text-6xl xl:text-7xl 2xl:text-8xl">
               {current.title}
-              <span className={`block ${current.text} drop-shadow-[0_0_24px_currentColor]`}>
+              <span
+                className={`block ${current.text} drop-shadow-[0_0_24px_currentColor]`}
+              >
                 {current.highlight}
               </span>
             </h1>
@@ -159,25 +159,21 @@ const Hero = () => {
               {current.desc}
             </p>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {benefits.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div
-                    key={item.title}
-                    className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-md"
-                  >
-                    <Icon className={current.text} size={31} />
-                    <div>
-                      <h4 className="text-sm font-bold">{item.title}</h4>
-                      <p className="text-xs text-slate-400">{item.desc}</p>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {benefits.map((item) => (
+                <MiniFeature
+                  key={item.title}
+                  icon={item.icon}
+                  title={item.title}
+                  sub={item.desc}
+                  color={current.text}
+                />
+              ))}
             </div>
 
-            <div className={`mt-8 flex max-w-3xl flex-col overflow-hidden rounded-2xl border ${current.border} bg-white/95 shadow-[0_0_35px_rgba(34,197,94,0.25)] md:flex-row`}>
+            <div
+              className={`mt-6 flex max-w-3xl flex-col overflow-hidden rounded-2xl border ${current.border} bg-white/95 shadow-[0_0_20px_rgba(34,197,94,0.14)] md:flex-row`}
+            >
               <div className="flex items-center gap-3 px-5 py-4 text-slate-700 md:flex-1">
                 <MapPin size={20} />
                 <input
@@ -197,16 +193,51 @@ const Hero = () => {
                 </select>
               </div>
 
-              <button className={`flex items-center justify-center gap-2 px-7 py-4 text-sm font-black text-white transition ${current.button}`}>
+              <button
+                className={`flex items-center justify-center gap-2 px-7 py-4 text-sm font-black text-white transition ${current.button}`}
+              >
                 Explore Facilities <ArrowRight size={18} />
               </button>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-3 lg:hidden">
+              {sports.map((sport, index) => {
+                const Icon = sport.icon;
+                const isActive = active === index;
+
+                return (
+                  <button
+                    key={sport.name}
+                    onClick={() => setActive(index)}
+                    className={`flex items-center gap-3 rounded-2xl border p-3 text-left backdrop-blur-xl transition ${
+                      isActive
+                        ? `${current.border} bg-white/15`
+                        : "border-white/10 bg-white/5"
+                    }`}
+                  >
+                    <Icon
+                      className={isActive ? current.text : "text-slate-400"}
+                      size={24}
+                    />
+
+                    <div>
+                      <p className="text-sm font-bold text-white">
+                        {sport.short}
+                      </p>
+
+                      <p className="text-xs text-slate-400">{sport.venues}</p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </motion.div>
 
           <div className="hidden lg:flex lg:justify-end">
-            <div className="relative h-[480px] w-[420px]">
+            <div className="relative h-[430px] w-[390px] xl:h-[470px] xl:w-[430px]">
               <div className="absolute inset-0 rounded-full border border-white/10" />
               <div className="absolute inset-10 rounded-full border border-white/10" />
+
               <div className="orbit-ring">
                 {sports.map((sport, index) => {
                   const Icon = sport.icon;
@@ -218,11 +249,15 @@ const Hero = () => {
                       onClick={() => setActive(index)}
                       className={`orbit-card orbit-card-${index} ${
                         isActive
-                          ? `${current.border} bg-white/20 scale-110`
+                          ? `${current.border} bg-white/20 scale-105`
                           : "border-white/10 bg-white/10 hover:bg-white/15"
                       }`}
                     >
-                      <Icon className={isActive ? current.text : "text-slate-300"} size={30} />
+                      <Icon
+                        className={isActive ? current.text : "text-slate-300"}
+                        size={30}
+                      />
+
                       <div>
                         <h3 className="font-bold text-white">{sport.short}</h3>
                         <p className={isActive ? current.text : "text-slate-400"}>
@@ -234,7 +269,9 @@ const Hero = () => {
                 })}
               </div>
 
-              <div className={`absolute left-1/2 top-1/2 grid h-40 w-40 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border ${current.border} bg-white/10 backdrop-blur-xl`}>
+              <div
+                className={`absolute left-1/2 top-1/2 grid h-36 w-36 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border ${current.border} bg-white/10 shadow-[0_0_35px_rgba(34,197,94,0.25)] backdrop-blur-xl xl:h-40 xl:w-40`}
+              >
                 <div className="text-center">
                   <CurrentIcon className={`mx-auto ${current.text}`} size={46} />
                   <p className="mt-2 text-sm font-bold">{current.short}</p>
@@ -245,7 +282,7 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="mt-10 grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-4 lg:p-6">
+        <div className="mt-8 grid gap-3 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-4 lg:p-5">
           <div className="flex items-center gap-4 rounded-2xl bg-white/5 p-3">
             <div className="flex -space-x-3">
               {[12, 13, 14, 15].map((img) => (
@@ -257,15 +294,31 @@ const Hero = () => {
                 />
               ))}
             </div>
+
             <div>
               <h3 className="text-xl font-black">10K+</h3>
               <p className="text-xs text-slate-400">Happy Players</p>
             </div>
           </div>
 
-          <Stat icon={Trophy} value="500+" label="Top Facilities" color={current.text} />
-          <Stat icon={Star} value="4.8" label="User Ratings" color="text-yellow-400" />
-          <Stat icon={Headphones} value="24/7" label="Support" color={current.text} />
+          <Stat
+            icon={Trophy}
+            value="500+"
+            label="Top Facilities"
+            color={current.text}
+          />
+          <Stat
+            icon={Star}
+            value="4.8"
+            label="User Ratings"
+            color="text-yellow-400"
+          />
+          <Stat
+            icon={Headphones}
+            value="24/7"
+            label="Support"
+            color={current.text}
+          />
         </div>
 
         <div className="mt-6 flex justify-center gap-3">
@@ -284,10 +337,22 @@ const Hero = () => {
   );
 };
 
+const MiniFeature = ({ icon: Icon, title, sub, color }) => (
+  <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
+    <Icon className={color} size={28} />
+
+    <div>
+      <h4 className="text-xs font-bold md:text-sm">{title}</h4>
+      <p className="text-[11px] text-slate-400 md:text-xs">{sub}</p>
+    </div>
+  </div>
+);
+
 const Stat = ({ icon: Icon, value, label, color }) => {
   return (
     <div className="flex items-center gap-4 rounded-2xl bg-white/5 p-3 lg:justify-center">
       <Icon className={color} size={34} />
+
       <div>
         <h3 className="text-xl font-black">{value}</h3>
         <p className="text-xs text-slate-400">{label}</p>

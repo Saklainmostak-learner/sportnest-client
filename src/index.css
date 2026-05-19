@@ -69,18 +69,18 @@ select {
 .orbit-ring {
   position: absolute;
   inset: 0;
-  animation: slowRotate 22s linear infinite;
+  animation: slowRotate 38s linear infinite;
 }
 
 .orbit-card {
   position: absolute;
   display: flex;
-  width: 210px;
+  width: 190px;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   border-radius: 22px;
   border-width: 1px;
-  padding: 16px;
+  padding: 14px;
   text-align: left;
   backdrop-filter: blur(18px);
   transition: 0.35s ease;
@@ -88,23 +88,23 @@ select {
 }
 
 .orbit-card-0 {
-  top: 20px;
-  left: 105px;
+  top: 15px;
+  left: 100px;
 }
 
 .orbit-card-1 {
-  right: -20px;
-  top: 190px;
+  right: -8px;
+  top: 175px;
 }
 
 .orbit-card-2 {
-  bottom: 20px;
-  left: 105px;
+  bottom: 15px;
+  left: 100px;
 }
 
 .orbit-card-3 {
-  left: -20px;
-  top: 190px;
+  left: -8px;
+  top: 175px;
 }
 
 @keyframes slowRotate {
