@@ -18,6 +18,7 @@ import footballBg from "../assets/football-hero.png";
 import swimmingBg from "../assets/swimming-hero.png";
 import tennisBg from "../assets/tennis-hero.png";
 import badmintonBg from "../assets/badminton-hero.png";
+import { Link } from "react-router-dom";
 
 const sports = [
   {
@@ -185,19 +186,28 @@ const Hero = () => {
 
               <div className="flex items-center gap-3 border-y border-slate-200 px-5 py-4 text-slate-700 md:flex-1 md:border-x md:border-y-0">
                 <CurrentIcon size={20} />
-                <select className="w-full bg-transparent text-sm font-semibold outline-none">
-                  <option>All Sports</option>
+                <select
+                  value={current.short}
+                  onChange={(e) => {
+                    const selectedIndex = sports.findIndex(
+                      (sport) => sport.short === e.target.value,
+                    );
+                    setActive(selectedIndex);
+                  }}
+                  className="w-full bg-transparent text-sm font-semibold outline-none"
+                >
                   {sports.map((sport) => (
                     <option key={sport.name}>{sport.short}</option>
                   ))}
                 </select>
               </div>
 
-              <button
+              <Link
+                to="/facilities"
                 className={`flex items-center justify-center gap-2 px-7 py-4 text-sm font-black text-white transition ${current.button}`}
               >
                 Explore Facilities <ArrowRight size={18} />
-              </button>
+              </Link>
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3 lg:hidden">
@@ -260,7 +270,9 @@ const Hero = () => {
 
                       <div>
                         <h3 className="font-bold text-white">{sport.short}</h3>
-                        <p className={isActive ? current.text : "text-slate-400"}>
+                        <p
+                          className={isActive ? current.text : "text-slate-400"}
+                        >
                           {sport.venues}
                         </p>
                       </div>
@@ -273,7 +285,10 @@ const Hero = () => {
                 className={`absolute left-1/2 top-1/2 grid h-36 w-36 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border ${current.border} bg-white/10 shadow-[0_0_35px_rgba(34,197,94,0.25)] backdrop-blur-xl xl:h-40 xl:w-40`}
               >
                 <div className="text-center">
-                  <CurrentIcon className={`mx-auto ${current.text}`} size={46} />
+                  <CurrentIcon
+                    className={`mx-auto ${current.text}`}
+                    size={46}
+                  />
                   <p className="mt-2 text-sm font-bold">{current.short}</p>
                   <p className="text-xs text-slate-300">{current.venues}</p>
                 </div>
@@ -282,7 +297,7 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-3 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-4 lg:p-5">
+        <div className="mt-6 grid gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-4 lg:p-5">
           <div className="flex items-center gap-4 rounded-2xl bg-white/5 p-3">
             <div className="flex -space-x-3">
               {[12, 13, 14, 15].map((img) => (

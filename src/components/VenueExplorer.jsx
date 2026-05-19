@@ -55,7 +55,7 @@ const VenueExplorer = () => {
         <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           {/* LEFT MAP */}
           <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
-            <div className="relative h-[520px] overflow-hidden rounded-[28px]">
+            <div className="relative h-[340px] overflow-hidden rounded-[28px]  md:h-[460px] lg:h-[520px]">
               <div className="absolute inset-0 bg-[#07130d]">
                 <div className="absolute inset-0 opacity-30 bg-[linear-gradient(rgba(34,197,94,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.18)_1px,transparent_1px)] bg-[size:42px_42px]" />
 
@@ -88,9 +88,9 @@ const VenueExplorer = () => {
               <motion.div
                 key={venue.id}
                 whileHover={{ x: 6 }}
-                className="group flex gap-4 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl transition"
+                className="group flex flex-col gap-4 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl transition sm:flex-row"
               >
-                <div className="h-32 w-36 overflow-hidden rounded-2xl">
+                <div className="h-32 w-full overflow-hidden rounded-2xl sm:w-36">
                   <img
                     src={venue.image}
                     alt={venue.name}

@@ -1,5 +1,6 @@
 import { MapPin, Star, Users, Clock, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const FacilityCard = ({ facility }) => {
   return (
@@ -59,9 +60,12 @@ const FacilityCard = ({ facility }) => {
             </h4>
           </div>
 
-          <button className="flex items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400">
+          <Link
+            to={`/facility/${facility.id}`}
+            className="flex items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
+          >
             Book <ArrowRight size={17} />
-          </button>
+          </Link>
         </div>
       </div>
     </motion.div>

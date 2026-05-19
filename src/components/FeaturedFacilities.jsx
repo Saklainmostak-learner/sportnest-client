@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import FacilityCard from "./FacilityCard";
 
 const facilities = [
@@ -92,9 +93,12 @@ const FeaturedFacilities = () => {
             </p>
           </div>
 
-          <button className="flex w-fit items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:border-green-400/50 hover:bg-green-500/10">
+          <Link
+            to="/facilities"
+            className="flex w-fit items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:border-green-400/50 hover:bg-green-500/10"
+          >
             View All Facilities
-          </button>
+          </Link>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

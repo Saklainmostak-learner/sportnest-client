@@ -39,14 +39,14 @@ const Navbar = () => {
   return (
     <header
       className={`fixed left-0 top-0 z-50 w-full transition-all duration-500 ${
-        scrolled
+        scrolled || open
           ? "border-b border-white/10 bg-[#020806]/80 shadow-[0_10px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
           : "bg-transparent"
       }`}
     >
       <nav
         className={`mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-6 lg:px-8 ${
-          scrolled ? "py-1" : "py-2 md:py-3"
+          scrolled ? "py-2" : "py-3 md:py-4"
         }`}
       >
         <Link to="/" className="flex items-center">
@@ -54,7 +54,7 @@ const Navbar = () => {
             src={logo}
             alt="SportNest Logo"
             className={`w-auto object-contain drop-shadow-[0_0_20px_rgba(34,197,94,0.75)] transition-all duration-500 hover:scale-105 ${
-              scrolled ? "h-14 sm:h-16 md:h-20" : "h-20 sm:h-24 md:h-28"
+              scrolled ? "h-12 sm:h-14 md:h-16" : "h-16 sm:h-20 md:h-24"
             }`}
           />
         </Link>
@@ -106,18 +106,21 @@ const Navbar = () => {
           </div>
         </div>
 
-        <button onClick={() => setOpen(!open)} className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5 text-white backdrop-blur-xl xl:hidden">
+        <button
+          onClick={() => setOpen(!open)}
+          className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5 text-white backdrop-blur-xl xl:hidden"
+        >
           {open ? <X /> : <Menu />}
         </button>
       </nav>
 
       {open && (
         <div className="mx-4 mb-4 rounded-2xl border border-white/10 bg-[#06120c]/95 p-4 shadow-2xl backdrop-blur-2xl xl:hidden">
-         <div className="space-y-2">
-          {navLinks.map((item) => {
-            const Icon = item.icon;
+          <div className="space-y-2">
+            {navLinks.map((item) => {
+              const Icon = item.icon;
 
-            return (
+              return (
                 <NavLink
                   key={item.path}
                   to={item.path}
@@ -130,13 +133,13 @@ const Navbar = () => {
                     }`
                   }
                 >
-                <Icon size={18} />
-                {item.name}
-              </NavLink>
-            );
-          })}
-        </div>
-         <div className="mt-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                  <Icon size={18} />
+                  {item.name}
+                </NavLink>
+              );
+            })}
+          </div>
+          <div className="mt-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
             <div className="flex items-center gap-3">
               <img
                 src="https://i.pravatar.cc/100?img=12"

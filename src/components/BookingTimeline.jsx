@@ -23,7 +23,7 @@ const steps = [
 
 const BookingTimeline = () => {
   return (
-    <section className="relative overflow-hidden bg-[#020806] px-4 py-28 text-white sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-[#020806] px-4 py-20 md:py-28 text-white sm:px-6 lg:px-8">
       <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-green-500/10 blur-[130px]" />
 
       <div className="relative mx-auto max-w-7xl">
