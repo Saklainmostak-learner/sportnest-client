@@ -117,8 +117,8 @@ const Hero = () => {
         />
       </AnimatePresence>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[#020806] via-[#020806]/80 to-[#020806]/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#020806] via-transparent to-[#020806]/50" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#020806]/80 via-[#020806]/55 to-[#020806]/15" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#020806]/80 via-transparent to-[#020806]/25" />
 
       <motion.div
         key={`glow-${current.name}`}

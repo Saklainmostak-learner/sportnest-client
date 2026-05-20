@@ -1,5 +1,6 @@
 import { MapPin, Star, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const venues = [
   {
@@ -123,10 +124,13 @@ const VenueExplorer = () => {
                     </p>
                   </div>
 
-                  <button className="mt-5 flex w-fit items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400">
+                  <Link
+                    to={`/facility/${venue.id}`}
+                    className="mt-5 flex w-fit items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
+                  >
                     Explore Venue
                     <ArrowRight size={17} />
-                  </button>
+                  </Link>
                 </div>
               </motion.div>
             ))}

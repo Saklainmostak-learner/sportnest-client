@@ -50,7 +50,7 @@ const sports = [
 
 const ExploreSports = () => {
   return (
-    <section className="bg-[#020806] px-4 py-24 text-white sm:px-6 lg:px-8">
+    <section className="bg-[#020806] px-4 py-20 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 text-center">
           <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">

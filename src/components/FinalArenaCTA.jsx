@@ -1,4 +1,5 @@
 import { ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const FinalArenaCTA = () => {
   return (
@@ -21,17 +22,23 @@ const FinalArenaCTA = () => {
             </h2>
 
             <p className="mt-6 max-w-2xl leading-8 text-slate-300">
-              Explore verified facilities, compare available slots and book your next sports session in minutes.
+              Explore verified facilities, compare available slots and book your
+              next sports session in minutes.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <button className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400">
+              <Link
+                to="/facilities"
+                className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400"
+              >
                 Explore Facilities <ArrowRight size={20} />
-              </button>
-
-              <button className="rounded-2xl border border-white/10 bg-white/5 px-7 py-4 font-black text-white transition hover:border-green-400/40 hover:bg-green-500/10">
+              </Link>
+              <Link
+                to="/add-facility"
+                className="rounded-2xl border border-white/10 bg-white/5 px-7 py-4 text-center font-black text-white transition hover:border-green-400/40 hover:bg-green-500/10"
+              >
                 Add Your Facility
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -40,7 +47,8 @@ const FinalArenaCTA = () => {
               <ShieldCheck className="mb-5 text-green-400" size={42} />
               <h3 className="text-2xl font-black">Verified Venues</h3>
               <p className="mt-3 text-slate-400">
-                Every facility can be listed with details, pricing, capacity and available slots.
+                Every facility can be listed with details, pricing, capacity and
+                available slots.
               </p>
             </div>
 
@@ -48,7 +56,8 @@ const FinalArenaCTA = () => {
               <Zap className="mb-5 text-green-400" size={42} />
               <h3 className="text-2xl font-black">Fast Booking Flow</h3>
               <p className="mt-3 text-slate-400">
-                Users can quickly choose date, time slot and confirm booking from the details page.
+                Users can quickly choose date, time slot and confirm booking
+                from the details page.
               </p>
             </div>
           </div>

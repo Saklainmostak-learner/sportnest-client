@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import {  Mail, X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import { FaChrome } from "react-icons/fa";
 
 const Login = () => {
@@ -11,7 +11,6 @@ const Login = () => {
 
       <div className="relative mx-auto flex min-h-[90vh] max-w-6xl items-center justify-center">
         <div className="grid w-full overflow-hidden rounded-[40px] border border-white/10 bg-[#07110b]/95 shadow-[0_0_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl lg:grid-cols-[0.95fr_1.05fr]">
-          
           {/* LEFT SIDE */}
           <div className="relative hidden overflow-hidden bg-[#0b1d13] lg:block">
             {/* MAP GRID */}
@@ -55,10 +54,7 @@ const Login = () => {
                 pos: "right-[12%] bottom-[22%]",
               },
             ].map((item, i) => (
-              <div
-                key={i}
-                className={`absolute ${item.pos}`}
-              >
+              <div key={i} className={`absolute ${item.pos}`}>
                 <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-xl">
                   <img
                     src={item.img}
@@ -80,9 +76,7 @@ const Login = () => {
 
               <h2 className="mt-3 max-w-sm text-5xl font-black uppercase leading-[1]">
                 Find Players.
-                <span className="block text-green-400">
-                  Book Arenas.
-                </span>
+                <span className="block text-green-400">Book Arenas.</span>
               </h2>
             </div>
           </div>
@@ -104,31 +98,44 @@ const Login = () => {
               </h1>
 
               <p className="mt-5 text-slate-400">
-                Access your bookings, explore sports venues and continue your journey.
+                Access your bookings, explore sports venues and continue your
+                journey.
               </p>
 
               {/* FORM */}
               <form className="mt-10 space-y-5">
                 <label className="block">
                   <span className="text-sm font-bold text-slate-300">
-                    Mobile Number
+                    Email Address
                   </span>
 
-                  <div className="mt-3 flex overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                    <div className="flex items-center gap-2 border-r border-white/10 px-5 text-lg font-black">
-                      🇧🇩 +880
-                    </div>
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+                    <Mail size={20} className="text-green-400" />
 
                     <input
-                      type="text"
-                      placeholder="1XXXXXXXXX"
-                      className="w-full bg-transparent px-5 py-5 text-lg outline-none placeholder:text-slate-500"
+                      type="email"
+                      placeholder="you@example.com"
+                      className="w-full bg-transparent outline-none placeholder:text-slate-500"
+                    />
+                  </div>
+                </label>
+
+                <label className="block">
+                  <span className="text-sm font-bold text-slate-300">
+                    Password
+                  </span>
+
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+                    <input
+                      type="password"
+                      placeholder="Enter password"
+                      className="w-full bg-transparent outline-none placeholder:text-slate-500"
                     />
                   </div>
                 </label>
 
                 <button className="w-full rounded-2xl bg-green-500 py-5 text-lg font-black text-white transition hover:bg-green-400">
-                  Send OTP
+                  Login
                 </button>
               </form>
 
@@ -154,15 +161,13 @@ const Login = () => {
 
               {/* FOOTER */}
               <p className="mt-10 text-center text-sm text-slate-500">
-                By continuing, you agree to SportNest’s terms and privacy policy.
+                By continuing, you agree to SportNest’s terms and privacy
+                policy.
               </p>
 
               <p className="mt-4 text-center text-slate-400">
                 New here?{" "}
-                <Link
-                  to="/register"
-                  className="font-black text-green-400"
-                >
+                <Link to="/register" className="font-black text-green-400">
                   Create account
                 </Link>
               </p>

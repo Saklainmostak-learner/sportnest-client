@@ -55,7 +55,7 @@ const FacilityCard = ({ facility }) => {
           <div>
             <p className="text-xs text-slate-400">Starting from</p>
             <h4 className="text-2xl font-black text-green-400">
-              $ {facility.price}
+              ৳{facility.price}
               <span className="text-sm text-slate-400"> /hr</span>
             </h4>
           </div>
