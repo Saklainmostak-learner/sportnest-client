@@ -15,7 +15,8 @@ const Register = () => {
           </h1>
 
           <p className="mt-5 max-w-xl text-slate-400">
-            Book venues, manage slots and become part of the local sports community.
+            Book venues, manage slots and become part of the local sports
+            community.
           </p>
         </div>
 
@@ -26,10 +27,21 @@ const Register = () => {
             <Input icon={User} label="Name" placeholder="Your name" />
             <Input icon={Mail} label="Email" placeholder="you@example.com" />
             <Input icon={Image} label="Photo URL" placeholder="https://..." />
-            <Input icon={Lock} label="Password" type="password" placeholder="At least 6 characters" />
-
+            <Input
+              icon={Lock}
+              label="Password"
+              type="password"
+              placeholder="At least 6 characters"
+            />
+            <Input
+              icon={Lock}
+              label="Confirm Password"
+              type="password"
+              placeholder="Confirm your password"
+            />
             <p className="text-xs text-slate-400">
-              Password must include uppercase, lowercase and minimum 6 characters.
+              Password must include uppercase, lowercase and minimum 6
+              characters.
             </p>
 
             <button className="w-full rounded-2xl bg-green-500 py-4 font-black text-white transition hover:bg-green-400">

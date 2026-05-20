@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, X } from "lucide-react";
+import { Lock, Mail, X } from "lucide-react";
 import { FaChrome } from "react-icons/fa";
 
 const Login = () => {
@@ -126,6 +126,7 @@ const Login = () => {
                   </span>
 
                   <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+                    <Lock size={20} className="text-green-400" />
                     <input
                       type="password"
                       placeholder="Enter password"

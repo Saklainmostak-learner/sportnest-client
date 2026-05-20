@@ -1,8 +1,22 @@
 import { CalendarCheck, XCircle } from "lucide-react";
 
 const bookings = [
-  { id: 1, name: "Green Field Turf", date: "2026-06-12", slot: "6 PM - 8 PM", price: 3000, status: "pending" },
-  { id: 2, name: "Aqua Swim Arena", date: "2026-06-14", slot: "9 AM - 10 AM", price: 1200, status: "confirmed" },
+  {
+    id: 1,
+    name: "Green Field Turf",
+    date: "2026-06-12",
+    slot: "6 PM - 8 PM",
+    price: 3000,
+    status: "pending",
+  },
+  {
+    id: 2,
+    name: "Aqua Swim Arena",
+    date: "2026-06-14",
+    slot: "9 AM - 10 AM",
+    price: 1200,
+    status: "confirmed",
+  },
 ];
 
 const MyBookings = () => {
@@ -21,7 +35,7 @@ const MyBookings = () => {
           {bookings.map((booking) => (
             <div
               key={booking.id}
-              className="grid gap-4 border-b border-white/10 p-5 md:grid-cols-[1.4fr_1fr_1fr_1fr_auto] md:items-center"
+              className="grid gap-4 border-b border-white/10 p-5 md:grid-cols-[1.4fr_1fr_1fr_1fr_auto_auto] md:items-center"
             >
               <div className="flex items-center gap-3">
                 <CalendarCheck className="text-green-400" />
@@ -32,6 +46,15 @@ const MyBookings = () => {
               <p className="text-slate-400">{booking.slot}</p>
               <p className="font-black text-green-400">৳ {booking.price}</p>
 
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-black uppercase ${
+                  booking.status === "confirmed"
+                    ? "bg-green-500/15 text-green-400"
+                    : "bg-yellow-500/15 text-yellow-400"
+                }`}
+              >
+                {booking.status}
+              </span>
               <button className="flex w-fit items-center gap-2 rounded-2xl bg-red-500/15 px-4 py-3 font-bold text-red-400">
                 <XCircle size={18} /> Cancel
               </button>

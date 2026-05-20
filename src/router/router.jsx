@@ -9,6 +9,7 @@ import MyBookings from "../pages/MyBookings";
 import AddFacility from "../pages/AddFacility";
 import ManageFacilities from "../pages/ManageFacilities";
 import NotFound from "../pages/NotFound";
+import PrivateRoute from "../routes/PrivateRoute";
 
 const router = createBrowserRouter([
   {
@@ -18,12 +19,45 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "facilities", element: <AllFacilities /> },
-      { path: "facility/:id", element: <FacilityDetails /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
-      { path: "my-bookings", element: <MyBookings /> },
-      { path: "add-facility", element: <AddFacility /> },
-      { path: "manage-facilities", element: <ManageFacilities /> },
+
+      {
+        path: "facility/:id",
+        element: (
+          <PrivateRoute>
+            <FacilityDetails />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "my-bookings",
+        element: (
+          <PrivateRoute>
+            <MyBookings />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-facility",
+        element: (
+          <PrivateRoute>
+            <AddFacility />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "manage-facilities",
+        element: (
+          <PrivateRoute>
+            <ManageFacilities />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "*",
+        element: <NotFound />,
+      },
     ],
   },
 ]);

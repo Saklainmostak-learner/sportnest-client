@@ -1,4 +1,5 @@
 import { Search, CalendarCheck, Trophy, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const steps = [
   {
@@ -37,7 +38,8 @@ const BookingTimeline = () => {
           </h2>
 
           <p className="mt-5 text-slate-400">
-            A smooth booking journey designed for players, teams and facility owners.
+            A smooth booking journey designed for players, teams and facility
+            owners.
           </p>
         </div>
 
@@ -65,9 +67,12 @@ const BookingTimeline = () => {
                 <h3 className="text-2xl font-black">{step.title}</h3>
                 <p className="mt-4 leading-7 text-slate-400">{step.desc}</p>
 
-                <button className="mt-8 flex items-center gap-2 text-sm font-black text-green-400">
-                  Learn More <ArrowRight size={17} />
-                </button>
+                <Link
+                  to="/facilities"
+                  className="mt-8 flex items-center gap-2 text-sm font-black text-green-400"
+                >
+                  Explore Facilities <ArrowRight size={17} />
+                </Link>
               </div>
             );
           })}

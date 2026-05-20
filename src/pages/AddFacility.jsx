@@ -1,14 +1,13 @@
 import { PlusCircle } from "lucide-react";
 
 const fields = [
-  "Facility Name",
-  "Facility Type",
-  "Image URL",
-  "Location",
-  "Price Per Hour",
-  "Capacity",
-  "Available Time Slots",
-  "Owner Email",
+  { label: "Facility Name", name: "name", type: "text", placeholder: "Green Field Turf" },
+  { label: "Image URL", name: "image", type: "url", placeholder: "https://example.com/image.jpg" },
+  { label: "Location", name: "location", type: "text", placeholder: "Bashundhara, Dhaka" },
+  { label: "Price Per Hour", name: "price", type: "number", placeholder: "1500" },
+  { label: "Capacity", name: "capacity", type: "text", placeholder: "12 Players" },
+  { label: "Available Time Slots", name: "slots", type: "text", placeholder: "6 PM - 8 PM, 8 PM - 10 PM" },
+  { label: "Owner Email", name: "ownerEmail", type: "email", placeholder: "owner@example.com" },
 ];
 
 const AddFacility = () => {
@@ -23,23 +22,59 @@ const AddFacility = () => {
           Add New Facility
         </h1>
 
+        <p className="mt-4 max-w-2xl text-slate-400">
+          Add your sports venue with pricing, capacity, available slots and booking details.
+        </p>
+
         <form className="mt-10 grid gap-5 rounded-[36px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-2xl md:grid-cols-2 md:p-8">
+          <label>
+            <span className="text-sm font-bold text-slate-300">
+              Facility Type
+            </span>
+
+            <select
+              name="type"
+              required
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
+            >
+              <option value="">Select facility type</option>
+              <option value="Football">Football</option>
+              <option value="Swimming">Swimming</option>
+              <option value="Badminton">Badminton</option>
+              <option value="Tennis">Tennis</option>
+              <option value="Cricket">Cricket</option>
+              <option value="Gym">Gym</option>
+            </select>
+          </label>
+
           {fields.map((field) => (
-            <label key={field}>
-              <span className="text-sm font-bold text-slate-300">{field}</span>
+            <label key={field.name}>
+              <span className="text-sm font-bold text-slate-300">
+                {field.label}
+              </span>
+
               <input
-                placeholder={field}
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none"
+                name={field.name}
+                type={field.type}
+                required
+                min={field.type === "number" ? 0 : undefined}
+                placeholder={field.placeholder}
+                className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
               />
             </label>
           ))}
 
           <label className="md:col-span-2">
-            <span className="text-sm font-bold text-slate-300">Description</span>
+            <span className="text-sm font-bold text-slate-300">
+              Description
+            </span>
+
             <textarea
+              name="description"
+              required
               rows="5"
               placeholder="Write facility description..."
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none"
+              className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
             />
           </label>
 

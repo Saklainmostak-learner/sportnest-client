@@ -147,7 +147,7 @@ const Navbar = () => {
                 className="h-10 w-10 rounded-full border-2 border-white/30"
               />
               <div>
-                <p className="text-sm font-bold text-white">Mahfuz</p>
+                <p className="text-sm font-bold text-white">Guest User</p>
                 <p className="text-xs text-slate-400">Player Account</p>
               </div>
             </div>
