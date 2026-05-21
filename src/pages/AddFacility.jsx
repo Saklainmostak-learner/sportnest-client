@@ -144,7 +144,10 @@ const AddFacility = () => {
             />
           </label>
 
-          <button   type="submit" className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 md:col-span-2">
+          <button
+            type="submit"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 md:col-span-2"
+          >
             <PlusCircle size={20} /> Add Facility
           </button>
         </form>

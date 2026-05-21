@@ -3,6 +3,8 @@ import { Image, Lock, Mail, User } from "lucide-react";
 import { FaChrome } from "react-icons/fa";
 import { useContext } from "react";
 import { AuthContext } from "../provider/AuthProvider";
+import toast from "react-hot-toast";
+
 const Register = () => {
   const { createUser, googleLogin, updateUserProfile } =
     useContext(AuthContext);
@@ -19,11 +21,11 @@ const Register = () => {
     const confirmPassword = form.confirmPassword.value;
 
     if (password !== confirmPassword) {
-      console.log("Password does not match");
+      toast.error("Password does not match");
       return;
     }
     if (!/(?=.*[a-z])(?=.*[A-Z]).{6,}/.test(password)) {
-      console.log(
+      toast.error(
         "Password must include uppercase, lowercase and minimum 6 characters",
       );
       return;
@@ -33,24 +35,26 @@ const Register = () => {
       .then(() => {
         updateUserProfile(name, photo)
           .then(() => {
+            toast.success("Registration successful");
             navigate("/");
           })
           .catch((error) => {
-            console.log(error.message);
+            toast.error(error.message);
           });
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error(error.message);
       });
   };
 
   const handleGoogleLogin = () => {
     googleLogin()
       .then(() => {
+        toast.success("Google login successful");
         navigate("/");
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error(error.message);
       });
   };
   return (

@@ -4,6 +4,7 @@ import { FaChrome } from "react-icons/fa";
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const { loginUser, googleLogin } = useContext(AuthContext);
@@ -20,20 +21,22 @@ const Login = () => {
 
     loginUser(email, password)
       .then(() => {
+        toast.success("Login successful");
         navigate(from, { replace: true });
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error(error.message);
       });
   };
 
   const handleGoogleLogin = () => {
     googleLogin()
       .then(() => {
+        toast.success("Google login successful");
         navigate(from, { replace: true });
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error(error.message);
       });
   };
   return (
@@ -117,9 +120,12 @@ const Login = () => {
           {/* RIGHT SIDE */}
           <div className="relative bg-[#07110b] p-6 sm:p-10 lg:p-14">
             {/* CLOSE */}
-            <button className="absolute right-6 top-6 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-400 transition hover:border-green-400/40 hover:text-white">
+            <Link
+              to="/"
+              className="absolute right-6 top-6 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-400 transition hover:border-green-400/40 hover:text-white"
+            >
               <X size={24} />
-            </button>
+            </Link>
 
             <div className="max-w-md">
               <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-green-400">
