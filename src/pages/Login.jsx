@@ -1,8 +1,41 @@
 import { Link } from "react-router-dom";
 import { Lock, Mail, X } from "lucide-react";
 import { FaChrome } from "react-icons/fa";
+import { useContext } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../provider/AuthProvider";
 
 const Login = () => {
+  const { loginUser, googleLogin } = useContext(AuthContext);
+const navigate = useNavigate();
+const location = useLocation();
+
+const from = location.state?.from?.pathname || "/";
+
+const handleLogin = (e) => {
+  e.preventDefault();
+
+  const email = e.target.email.value;
+  const password = e.target.password.value;
+
+  loginUser(email, password)
+    .then(() => {
+      navigate(from, { replace: true });
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+};
+
+const handleGoogleLogin = () => {
+  googleLogin()
+    .then(() => {
+      navigate(from, { replace: true });
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+};
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#020806] px-4 py-10 text-white">
       {/* BACKGROUND GLOW */}
@@ -103,7 +136,7 @@ const Login = () => {
               </p>
 
               {/* FORM */}
-              <form className="mt-10 space-y-5">
+              <form  onSubmit={handleLogin} className="mt-10 space-y-5">
                 <label className="block">
                   <span className="text-sm font-bold text-slate-300">
                     Email Address
@@ -114,6 +147,7 @@ const Login = () => {
 
                     <input
                       type="email"
+                      name="email"
                       placeholder="you@example.com"
                       className="w-full bg-transparent outline-none placeholder:text-slate-500"
                     />
@@ -129,13 +163,14 @@ const Login = () => {
                     <Lock size={20} className="text-green-400" />
                     <input
                       type="password"
+                      name="password"
                       placeholder="Enter password"
                       className="w-full bg-transparent outline-none placeholder:text-slate-500"
                     />
                   </div>
                 </label>
 
-                <button className="w-full rounded-2xl bg-green-500 py-5 text-lg font-black text-white transition hover:bg-green-400">
+                <button type="submit" className="w-full rounded-2xl bg-green-500 py-5 text-lg font-black text-white transition hover:bg-green-400">
                   Login
                 </button>
               </form>
@@ -150,11 +185,11 @@ const Login = () => {
               {/* SOCIAL */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <button className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10">
-                  <Mail size={20} />
-                  Email
+                  <Mail size={20} /> //dummy button
+                  Email 
                 </button>
 
-                <button className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10">
+                <button onClick={handleGoogleLogin} className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10">
                   <FaChrome size={20} />
                   Google
                 </button>
