@@ -183,9 +183,10 @@ const handleGoogleLogin = () => {
               </div>
 
               {/* SOCIAL */}
+              {/* dummy button */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <button className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10">
-                  <Mail size={20} /> //dummy button
+                  <Mail size={20} /> 
                   Email 
                 </button>
 
