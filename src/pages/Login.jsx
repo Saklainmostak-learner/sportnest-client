@@ -7,37 +7,37 @@ import { AuthContext } from "../provider/AuthProvider";
 
 const Login = () => {
   const { loginUser, googleLogin } = useContext(AuthContext);
-const navigate = useNavigate();
-const location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/";
 
-const handleLogin = (e) => {
-  e.preventDefault();
+  const handleLogin = (e) => {
+    e.preventDefault();
 
-  const email = e.target.email.value;
-  const password = e.target.password.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
-  loginUser(email, password)
-    .then(() => {
-      navigate(from, { replace: true });
-    })
-    .catch((error) => {
-      console.log(error.message);
-    });
-};
+    loginUser(email, password)
+      .then(() => {
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
 
-const handleGoogleLogin = () => {
-  googleLogin()
-    .then(() => {
-      navigate(from, { replace: true });
-    })
-    .catch((error) => {
-      console.log(error.message);
-    });
-};
+  const handleGoogleLogin = () => {
+    googleLogin()
+      .then(() => {
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#020806] px-4 py-10 text-white">
+    <section className="relative min-h-screen overflow-hidden bg-[#020806] px-4 pb-20 pt-28 text-white md:pt-36">
       {/* BACKGROUND GLOW */}
       <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-green-500/10 blur-[140px]" />
       <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-sky-500/10 blur-[140px]" />
@@ -136,7 +136,7 @@ const handleGoogleLogin = () => {
               </p>
 
               {/* FORM */}
-              <form  onSubmit={handleLogin} className="mt-10 space-y-5">
+              <form onSubmit={handleLogin} className="mt-10 space-y-5">
                 <label className="block">
                   <span className="text-sm font-bold text-slate-300">
                     Email Address
@@ -170,7 +170,10 @@ const handleGoogleLogin = () => {
                   </div>
                 </label>
 
-                <button type="submit" className="w-full rounded-2xl bg-green-500 py-5 text-lg font-black text-white transition hover:bg-green-400">
+                <button
+                  type="submit"
+                  className="w-full rounded-2xl bg-green-500 py-5 text-lg font-black text-white transition hover:bg-green-400"
+                >
                   Login
                 </button>
               </form>
@@ -186,11 +189,14 @@ const handleGoogleLogin = () => {
               {/* dummy button */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <button className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10">
-                  <Mail size={20} /> 
-                  Email 
+                  <Mail size={20} />
+                  Email
                 </button>
 
-                <button onClick={handleGoogleLogin} className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10">
+                <button
+                  onClick={handleGoogleLogin}
+                  className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10"
+                >
                   <FaChrome size={20} />
                   Google
                 </button>

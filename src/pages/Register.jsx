@@ -54,7 +54,7 @@ const Register = () => {
       });
   };
   return (
-    <section className="min-h-screen bg-[#020806] px-4 pb-20 pt-36 text-white">
+    <section className="min-h-screen bg-[#020806] px-4 pb-20 pt-28 text-white md:pt-36">
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
         <div>
           <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">

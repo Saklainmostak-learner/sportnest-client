@@ -1,16 +1,78 @@
 import { PlusCircle } from "lucide-react";
+import { useContext } from "react";
+import { AuthContext } from "../provider/AuthProvider";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const fields = [
-  { label: "Facility Name", name: "name", type: "text", placeholder: "Green Field Turf" },
-  { label: "Image URL", name: "image", type: "url", placeholder: "https://example.com/image.jpg" },
-  { label: "Location", name: "location", type: "text", placeholder: "Bashundhara, Dhaka" },
-  { label: "Price Per Hour", name: "price", type: "number", placeholder: "1500" },
-  { label: "Capacity", name: "capacity", type: "text", placeholder: "12 Players" },
-  { label: "Available Time Slots", name: "slots", type: "text", placeholder: "6 PM - 8 PM, 8 PM - 10 PM" },
-  { label: "Owner Email", name: "ownerEmail", type: "email", placeholder: "owner@example.com" },
+  {
+    label: "Facility Name",
+    name: "name",
+    type: "text",
+    placeholder: "Green Field Turf",
+  },
+  {
+    label: "Image URL",
+    name: "image",
+    type: "url",
+    placeholder: "https://example.com/image.jpg",
+  },
+  {
+    label: "Location",
+    name: "location",
+    type: "text",
+    placeholder: "Bashundhara, Dhaka",
+  },
+  {
+    label: "Price Per Hour",
+    name: "price",
+    type: "number",
+    placeholder: "1500",
+  },
+  {
+    label: "Capacity",
+    name: "capacity",
+    type: "text",
+    placeholder: "12 Players",
+  },
+  {
+    label: "Available Time Slots",
+    name: "slots",
+    type: "text",
+    placeholder: "6 PM - 8 PM, 8 PM - 10 PM",
+  },
 ];
 
 const AddFacility = () => {
+  const { user } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure();
+
+  const handleAddFacility = (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+
+    const facility = {
+      name: form.name.value,
+      type: form.type.value,
+      image: form.image.value,
+      location: form.location.value,
+      price: Number(form.price.value),
+      capacity: form.capacity.value,
+      slots: form.slots.value,
+      ownerEmail: user?.email,
+      description: form.description.value,
+    };
+
+    axiosSecure
+      .post("/facilities", facility)
+      .then((res) => {
+        console.log(res.data);
+        form.reset();
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
@@ -23,10 +85,14 @@ const AddFacility = () => {
         </h1>
 
         <p className="mt-4 max-w-2xl text-slate-400">
-          Add your sports venue with pricing, capacity, available slots and booking details.
+          Add your sports venue with pricing, capacity, available slots and
+          booking details.
         </p>
 
-        <form className="mt-10 grid gap-5 rounded-[36px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-2xl md:grid-cols-2 md:p-8">
+        <form
+          onSubmit={handleAddFacility}
+          className="mt-10 grid gap-5 rounded-[36px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-2xl md:grid-cols-2 md:p-8"
+        >
           <label>
             <span className="text-sm font-bold text-slate-300">
               Facility Type
@@ -78,7 +144,7 @@ const AddFacility = () => {
             />
           </label>
 
-          <button className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 md:col-span-2">
+          <button   type="submit" className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 md:col-span-2">
             <PlusCircle size={20} /> Add Facility
           </button>
         </form>

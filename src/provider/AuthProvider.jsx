@@ -60,14 +60,18 @@ const AuthProvider = ({ children }) => {
         await axios.post(
           `${import.meta.env.VITE_API_URL}/jwt`,
           { email: currentUser.email },
-          { withCredentials: true }
+          { withCredentials: true },
         );
       } else {
-        await axios.post(
-          `${import.meta.env.VITE_API_URL}/logout`,
-          {},
-          { withCredentials: true }
-        );
+        try {
+          await axios.post(
+            `${import.meta.env.VITE_API_URL}/jwt`,
+            { email: currentUser.email },
+            { withCredentials: true },
+          );
+        } catch (error) {
+          console.log(error.message);
+        }
       }
 
       setLoading(false);
@@ -87,9 +91,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
 };
 
