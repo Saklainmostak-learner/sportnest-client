@@ -1,10 +1,11 @@
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import EmptyState from "../components/EmptyState";
 import Loading from "../components/Loading";
 import { AuthContext } from "../provider/AuthProvider";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import { Link } from "react-router-dom";
 
 const ManageFacilities = () => {
   const { user } = useContext(AuthContext);
@@ -81,6 +82,13 @@ const ManageFacilities = () => {
                   <p className="font-black">৳ {facility.price}/hr</p>
 
                   <div className="flex gap-3">
+                    <Link
+                      to={`/update-facility/${facility._id}`}
+                      className="flex items-center gap-2 rounded-2xl bg-green-500 px-4 py-3 text-sm font-bold text-white hover:bg-green-400"
+                    >
+                      <Edit size={16} />
+                      Edit
+                    </Link>
                     <button
                       onClick={() => handleDelete(facility._id)}
                       className="flex items-center gap-2 rounded-2xl bg-red-500 px-4 py-3 text-sm font-bold text-white hover:bg-red-400"

@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import EmptyState from "./EmptyState";
 import FacilityCard from "./FacilityCard";
 
 const FeaturedFacilities = () => {
@@ -14,9 +15,6 @@ const FeaturedFacilities = () => {
 
   return (
     <section className="relative overflow-hidden bg-[#020806] px-4 py-24 text-white sm:px-6 lg:px-8">
-      <div className="absolute left-0 top-20 h-72 w-72 rounded-full bg-green-500/10 blur-[100px]" />
-      <div className="absolute right-0 bottom-20 h-72 w-72 rounded-full bg-sky-500/10 blur-[100px]" />
-
       <div className="relative mx-auto max-w-7xl">
         <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
@@ -27,17 +25,9 @@ const FeaturedFacilities = () => {
             <h2 className="text-4xl font-black tracking-tight md:text-5xl">
               Featured Facilities
             </h2>
-
-            <p className="mt-4 max-w-2xl text-slate-400">
-              Handpicked premium sports venues for your next match, practice, or
-              weekend game.
-            </p>
           </div>
 
-          <Link
-            to="/facilities"
-            className="flex w-fit items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:border-green-400/50 hover:bg-green-500/10"
-          >
+          <Link to="/facilities" className="rounded-2xl bg-green-500 px-6 py-3 font-bold text-white">
             View All Facilities
           </Link>
         </div>
@@ -45,16 +35,11 @@ const FeaturedFacilities = () => {
         {facilities.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {facilities.map((facility) => (
-              <FacilityCard key={facility._id} facility={facility} />
+              <FacilityCard key={facility._id || facility.id} facility={facility} />
             ))}
           </div>
         ) : (
-          <div className="rounded-[30px] border border-white/10 bg-white/[0.04] p-10 text-center">
-            <h3 className="text-2xl font-black">No Featured Facilities Yet</h3>
-            <p className="mt-2 text-slate-400">
-              Add facilities first. They will appear here automatically.
-            </p>
-          </div>
+          <EmptyState title="No Featured Facilities" message="Add facilities first." />
         )}
       </div>
     </section>

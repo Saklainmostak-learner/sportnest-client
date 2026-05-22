@@ -10,6 +10,7 @@ import AddFacility from "../pages/AddFacility";
 import ManageFacilities from "../pages/ManageFacilities";
 import NotFound from "../pages/NotFound";
 import PrivateRoute from "../routes/PrivateRoute";
+import UpdateFacility from "../pages/UpdateFacility";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <ManageFacilities />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "update-facility/:id",
+        element: (
+          <PrivateRoute>
+            <UpdateFacility />
           </PrivateRoute>
         ),
       },

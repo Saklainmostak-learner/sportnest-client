@@ -1,8 +1,33 @@
-import { MapPin, Star, Users, Clock, ArrowRight } from "lucide-react";
+import {
+  MapPin,
+  Star,
+  Users,
+  Clock,
+  ArrowRight,
+  ShoppingCart,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AppStateContext } from "../provider/AppStateProvider";
+import toast from "react-hot-toast";
 
 const FacilityCard = ({ facility }) => {
+  const { favorites, toggleFavorite, addToCart } = useContext(AppStateContext);
+
+  const id = facility._id || facility.id;
+  const isFavorite = favorites.some((item) => (item._id || item.id) === id);
+
+  const handleFavorite = () => {
+    toggleFavorite(facility);
+    toast.success(isFavorite ? "Removed from favorites" : "Added to favorites");
+  };
+
+  const handleCart = () => {
+    addToCart(facility);
+    toast.success("Added to cart");
+  };
+
   return (
     <motion.div
       whileHover={{ y: -8 }}
@@ -22,8 +47,16 @@ const FacilityCard = ({ facility }) => {
           {facility.type}
         </div>
 
-        <button className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-black/40 text-white backdrop-blur-xl transition hover:bg-green-500">
-          <Star size={18} />
+        <button
+          type="button"
+          onClick={handleFavorite}
+          className={`absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full backdrop-blur-xl transition ${
+            isFavorite
+              ? "bg-yellow-400 text-slate-950"
+              : "bg-black/40 text-white hover:bg-green-500"
+          }`}
+        >
+          <Star size={18} fill={isFavorite ? "currentColor" : "none"} />
         </button>
       </div>
 
@@ -60,12 +93,22 @@ const FacilityCard = ({ facility }) => {
             </h4>
           </div>
 
-          <Link
-            to={`/facility/${facility._id || facility.id}`}
-            className="flex items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
-          >
-            Book <ArrowRight size={17} />
-          </Link>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleCart}
+              className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-green-500"
+            >
+              <ShoppingCart size={18} />
+            </button>
+
+            <Link
+              to={`/facility/${id}`}
+              className="flex items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
+            >
+              Book <ArrowRight size={17} />
+            </Link>
+          </div>
         </div>
       </div>
     </motion.div>
