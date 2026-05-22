@@ -52,11 +52,13 @@ const AuthProvider = ({ children }) => {
 
       try {
         if (currentUser?.email) {
-          await axios.post(
+          const res = await axios.post(
             `${import.meta.env.VITE_API_URL}/jwt`,
             { email: currentUser.email },
-            { withCredentials: true }
+            { withCredentials: true },
           );
+
+          localStorage.setItem("sportnest_token", res.data.token);
 
           setUser(currentUser);
         } else {
@@ -65,7 +67,7 @@ const AuthProvider = ({ children }) => {
           await axios.post(
             `${import.meta.env.VITE_API_URL}/logout`,
             {},
-            { withCredentials: true }
+            { withCredentials: true },
           );
         }
       } catch (error) {
@@ -90,9 +92,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
 };
 
