@@ -5,14 +5,14 @@ import FinalArenaCTA from "../components/FinalArenaCTA";
 import Hero from "../components/Hero";
 import PlayerSpotlight from "../components/PlayerSpotlight";
 
-// import VenueExplorer from "../components/VenueExplorer";
+import VenueExplorer from "../components/VenueExplorer";
 
 const Home = () => {
   return (
     <>
       <Hero />
       <ExploreSports />
-      {/* <VenueExplorer /> */}
+      <VenueExplorer />
       <FeaturedFacilities />
       <BookingTimeline />
       <PlayerSpotlight />

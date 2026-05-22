@@ -6,7 +6,7 @@ import "./index.css";
 import router from "./router/router";
 import AuthProvider from "./provider/AuthProvider";
 import AppStateProvider from "./provider/AppStateProvider";
-// import "leaflet/dist/leaflet.css";
+import "leaflet/dist/leaflet.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
