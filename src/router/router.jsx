@@ -11,6 +11,9 @@ import ManageFacilities from "../pages/ManageFacilities";
 import NotFound from "../pages/NotFound";
 import PrivateRoute from "../routes/PrivateRoute";
 import UpdateFacility from "../pages/UpdateFacility";
+import Dashboard from "../pages/Dashboard";
+import Favorites from "../pages/Favorites";
+import Cart from "../pages/Cart";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +43,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "dashboard",
+        element: (
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        ),
+      },
+      {
         path: "add-facility",
         element: (
           <PrivateRoute>
@@ -60,6 +71,22 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <UpdateFacility />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "favorites",
+        element: (
+          <PrivateRoute>
+            <Favorites />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "cart",
+        element: (
+          <PrivateRoute>
+            <Cart />
           </PrivateRoute>
         ),
       },

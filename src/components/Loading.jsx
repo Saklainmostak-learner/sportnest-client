@@ -1,11 +1,12 @@
 const Loading = () => {
   return (
-    <div className="grid min-h-screen place-items-center bg-[#020806] text-white">
-      <div className="text-center">
-        <div className="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-white/10 border-t-green-400" />
-        <p className="mt-5 font-bold text-slate-400">Loading SportNest...</p>
+    <section className="flex min-h-screen items-center justify-center bg-[#020806]">
+      <div className="space-y-5">
+        <div className="h-6 w-52 animate-pulse rounded-full bg-white/10" />
+        <div className="h-32 w-[320px] animate-pulse rounded-[32px] bg-white/5" />
+        <div className="h-6 w-72 animate-pulse rounded-full bg-white/10" />
       </div>
-    </div>
+    </section>
   );
 };
 

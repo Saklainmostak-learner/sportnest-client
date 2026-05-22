@@ -13,6 +13,7 @@ const FacilityDetails = () => {
 
   const [facility, setFacility] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hours, setHours] = useState(1);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/facilities/${id}`)
@@ -49,14 +50,15 @@ const FacilityDetails = () => {
     axiosSecure
       .post("/bookings", booking)
       .then(() => {
-        toast.success("Booking confirmed");
+        toast.success("Booking confirmed successfully");
         form.reset();
       })
       .catch((error) => toast.error(error.message));
   };
 
   if (loading) return <Loading />;
-  if (!facility) return <p className="pt-40 text-center text-white">No facility found</p>;
+  if (!facility)
+    return <p className="pt-40 text-center text-white">No facility found</p>;
 
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-44 text-white sm:px-6 md:pt-48 lg:px-8">
@@ -84,7 +86,11 @@ const FacilityDetails = () => {
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <Info icon={MapPin} label="Location" value={facility.location} />
               <Info icon={Users} label="Capacity" value={facility.capacity} />
-              <Info icon={Clock} label="Price" value={`৳${facility.price}/hr`} />
+              <Info
+                icon={Clock}
+                label="Price"
+                value={`৳${facility.price}/hr`}
+              />
               <Info icon={ShieldCheck} label="Status" value="Verified" />
             </div>
           </div>
@@ -96,9 +102,47 @@ const FacilityDetails = () => {
           <form onSubmit={handleBooking} className="mt-7 space-y-5">
             <Input label="Facility Name" value={facility.name} readOnly />
             <Input label="Booking Date" name="bookingDate" type="date" />
-            <Input label="Time Slot" name="timeSlot" placeholder={facility.slots} />
-            <Input label="Hours" name="hours" type="number" placeholder="2" />
-            <Input label="Price Per Hour" value={`৳${facility.price}`} readOnly />
+            <label className="block">
+              <span className="text-sm font-bold text-slate-300">
+                Time Slot
+              </span>
+
+              <select
+                name="timeSlot"
+                required
+                className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none"
+              >
+                {facility.slots.split(",").map((slot, index) => (
+                  <option key={index} value={slot.trim()}>
+                    {slot.trim()}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-sm font-bold text-slate-300">Hours</span>
+
+              <input
+                name="hours"
+                type="number"
+                min="1"
+                value={hours}
+                onChange={(e) => setHours(Number(e.target.value))}
+                className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none"
+              />
+            </label>
+            <Input
+              label="Price Per Hour"
+              value={`৳${facility.price}`}
+              readOnly
+            />
+            <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-5">
+              <p className="text-sm text-slate-300">Total Booking Price</p>
+
+              <h3 className="mt-2 text-4xl font-black text-green-400">
+                ৳{Number(facility.price) * hours}
+              </h3>
+            </div>
 
             <button
               type="submit"
@@ -121,7 +165,14 @@ const Info = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const Input = ({ label, name, type = "text", value, placeholder, readOnly = false }) => (
+const Input = ({
+  label,
+  name,
+  type = "text",
+  value,
+  placeholder,
+  readOnly = false,
+}) => (
   <label className="block">
     <span className="text-sm font-bold text-slate-300">{label}</span>
     <input

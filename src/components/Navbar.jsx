@@ -133,7 +133,7 @@ const Navbar = () => {
                   </Link>
 
                   <Link
-                    to="/manage-facilities"
+                    to="/dashboard"
                     className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10"
                   >
                     <UserCircle size={18} />
@@ -248,13 +248,13 @@ const Navbar = () => {
 
 const IconBadge = ({ icon: Icon, count, title }) => {
   const { cart = [], favorites = [] } = useContext(AppStateContext);
-
   const items = title === "Cart" ? cart : favorites;
+  const path = title === "Cart" ? "/cart" : "/favorites";
 
   return (
     <div className="group relative">
-      <button
-        type="button"
+      <Link
+        to={path}
         title={title}
         className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white backdrop-blur-xl transition hover:border-green-400/50 hover:bg-green-500/10"
       >
@@ -264,7 +264,7 @@ const IconBadge = ({ icon: Icon, count, title }) => {
             {count}
           </span>
         )}
-      </button>
+      </Link>
 
       <div className="invisible absolute right-0 top-[125%] z-50 w-80 translate-y-3 rounded-3xl border border-white/10 bg-[#07110b]/95 p-4 opacity-0 shadow-2xl backdrop-blur-2xl transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
         <h3 className="mb-3 text-sm font-black text-white">{title}</h3>
@@ -355,6 +355,13 @@ const MobileBadge = ({ icon: Icon, count, label }) => {
           ) : (
             <p className="text-sm text-slate-400">No items added yet.</p>
           )}
+          <Link
+            to={label === "Cart" ? "/cart" : "/favorites"}
+            onClick={() => setShow(false)}
+            className="mt-3 block rounded-xl bg-green-500 py-3 text-center text-sm font-black text-white"
+          >
+            View {label}
+          </Link>
         </div>
       )}
     </div>

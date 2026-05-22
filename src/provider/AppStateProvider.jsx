@@ -21,7 +21,6 @@ const AppStateProvider = ({ children }) => {
 
   const toggleFavorite = (facility) => {
     const id = facility._id || facility.id;
-
     const exists = favorites.find((item) => (item._id || item.id) === id);
 
     if (exists) {
@@ -33,12 +32,15 @@ const AppStateProvider = ({ children }) => {
 
   const addToCart = (facility) => {
     const id = facility._id || facility.id;
-
     const exists = cart.find((item) => (item._id || item.id) === id);
 
     if (!exists) {
       setCart([...cart, facility]);
     }
+  };
+
+  const removeFromCart = (id) => {
+    setCart(cart.filter((item) => (item._id || item.id) !== id));
   };
 
   return (
@@ -48,6 +50,7 @@ const AppStateProvider = ({ children }) => {
         cart,
         toggleFavorite,
         addToCart,
+        removeFromCart,
       }}
     >
       {children}
