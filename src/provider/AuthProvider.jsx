@@ -8,7 +8,6 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
-
 import axios from "axios";
 import { auth } from "../firebase/firebase.config";
 
@@ -20,25 +19,21 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // REGISTER
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // LOGIN
   const loginUser = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // GOOGLE LOGIN
   const googleLogin = () => {
     setLoading(true);
     return signInWithPopup(auth, googleProvider);
   };
 
-  // UPDATE PROFILE
   const updateUserProfile = (name, photo) => {
     return updateProfile(auth.currentUser, {
       displayName: name,
@@ -46,7 +41,6 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  // LOGOUT
   const logoutUser = () => {
     setLoading(true);
     return signOut(auth);
@@ -56,42 +50,44 @@ const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
 
-      if (currentUser?.email) {
-        await axios.post(
-          `${import.meta.env.VITE_API_URL}/jwt`,
-          { email: currentUser.email },
-          { withCredentials: true },
-        );
-      } else {
-        try {
+      try {
+        if (currentUser?.email) {
           await axios.post(
             `${import.meta.env.VITE_API_URL}/jwt`,
             { email: currentUser.email },
-            { withCredentials: true },
+            { withCredentials: true }
           );
-        } catch (error) {
-          console.log(error.message);
+        } else {
+          await axios.post(
+            `${import.meta.env.VITE_API_URL}/logout`,
+            {},
+            { withCredentials: true }
+          );
         }
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const authInfo = {
-    user,
-    loading,
-    createUser,
-    loginUser,
-    googleLogin,
-    updateUserProfile,
-    logoutUser,
-  };
-
   return (
-    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        createUser,
+        loginUser,
+        googleLogin,
+        updateUserProfile,
+        logoutUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 

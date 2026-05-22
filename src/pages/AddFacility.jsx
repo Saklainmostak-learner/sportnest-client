@@ -2,6 +2,7 @@ import { PlusCircle } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../provider/AuthProvider";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 const fields = [
   {
@@ -26,13 +27,13 @@ const fields = [
     label: "Price Per Hour",
     name: "price",
     type: "number",
-    placeholder: "1500",
+    placeholder: "৳",
   },
   {
     label: "Capacity",
     name: "capacity",
     type: "text",
-    placeholder: "12 Players",
+    placeholder: "Number of Players",
   },
   {
     label: "Available Time Slots",
@@ -65,12 +66,12 @@ const AddFacility = () => {
 
     axiosSecure
       .post("/facilities", facility)
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
+        toast.success("Facility added successfully");
         form.reset();
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error(error.message);
       });
   };
   return (
@@ -101,10 +102,10 @@ const AddFacility = () => {
             <select
               name="type"
               required
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
+              className="mt-2 w-full rounded-2xl text-slate-500 border border-white/10 bg-[#07110b] px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
             >
               <option value="">Select facility type</option>
-              <option value="Football">Football</option>
+              <option value="Football" >Football</option>
               <option value="Swimming">Swimming</option>
               <option value="Badminton">Badminton</option>
               <option value="Tennis">Tennis</option>

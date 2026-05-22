@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { MapPin, Search, SlidersHorizontal } from "lucide-react";
 import FacilityCard from "../components/FacilityCard";
 import EmptyState from "../components/EmptyState";
 
 const AllFacilities = () => {
+  const [searchParams] = useSearchParams();
+  const initialType = searchParams.get("type") || "";
+
   const [facilities, setFacilities] = useState([]);
-  const [search, setSearch] = useState("");
-  const [type, setType] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [type, setType] = useState(initialType);
 
   useEffect(() => {
-    fetch(
-      `${import.meta.env.VITE_API_URL}/facilities?search=${search}&type=${type}`,
-    )
+    fetch(`${import.meta.env.VITE_API_URL}/facilities?search=${search}&type=${type}`)
       .then((res) => res.json())
       .then((data) => setFacilities(data))
       .catch((error) => console.log(error.message));
@@ -77,14 +79,11 @@ const AllFacilities = () => {
           {facilities.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {facilities.map((facility) => (
-                <FacilityCard key={facility._id} facility={facility} />
+                <FacilityCard key={facility._id || facility.id} facility={facility} />
               ))}
             </div>
           ) : (
-            <EmptyState
-              title="No Facilities Found"
-              message="Try another search keyword or sport type."
-            />
+            <EmptyState title="No Facilities Found" message="Try another search keyword or sport type." />
           )}
         </div>
       </div>

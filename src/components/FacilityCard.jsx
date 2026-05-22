@@ -61,7 +61,7 @@ const FacilityCard = ({ facility }) => {
           </div>
 
           <Link
-            to={`/facility/${facility.id}`}
+            to={`/facility/${facility._id || facility.id}`}
             className="flex items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
           >
             Book <ArrowRight size={17} />

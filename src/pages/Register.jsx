@@ -6,7 +6,7 @@ import { AuthContext } from "../provider/AuthProvider";
 import toast from "react-hot-toast";
 
 const Register = () => {
-  const { createUser, googleLogin, updateUserProfile } =
+  const { createUser, googleLogin, updateUserProfile, logoutUser } =
     useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -35,8 +35,9 @@ const Register = () => {
       .then(() => {
         updateUserProfile(name, photo)
           .then(() => {
-            toast.success("Registration successful");
-            navigate("/");
+            toast.success("Registration successful. Please login now.");
+            logoutUser();
+            navigate("/login");
           })
           .catch((error) => {
             toast.error(error.message);

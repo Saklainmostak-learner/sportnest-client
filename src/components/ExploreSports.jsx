@@ -73,7 +73,7 @@ const ExploreSports = () => {
             return (
               <Link
                 key={sport.name}
-                to={`/facilities?type=${sport.name.toLowerCase()}`}
+                to={`/facilities?type=${sport.name}`}
                 className="group relative min-h-[260px] overflow-hidden border-white/10 md:border-r md:border-b"
               >
                 <img

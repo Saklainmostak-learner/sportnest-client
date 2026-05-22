@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Calendar, Clock, MapPin, ShieldCheck, Users } from "lucide-react";
 import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import { AuthContext } from "../provider/AuthProvider";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import Loading from "../components/Loading";
@@ -21,19 +22,16 @@ const FacilityDetails = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error(error.message);
         setLoading(false);
       });
   }, [id]);
-
-  if (loading) return <Loading />;
 
   const handleBooking = (e) => {
     e.preventDefault();
 
     const form = e.target;
     const hours = Number(form.hours.value);
-    const totalPrice = Number(facility.price) * hours;
 
     const booking = {
       facilityId: facility._id,
@@ -45,17 +43,20 @@ const FacilityDetails = () => {
       bookingDate: form.bookingDate.value,
       timeSlot: form.timeSlot.value,
       hours,
-      totalPrice,
+      totalPrice: Number(facility.price) * hours,
     };
 
     axiosSecure
       .post("/bookings", booking)
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
+        toast.success("Booking confirmed");
         form.reset();
       })
-      .catch((error) => console.log(error.message));
+      .catch((error) => toast.error(error.message));
   };
+
+  if (loading) return <Loading />;
+  if (!facility) return <p className="pt-40 text-center text-white">No facility found</p>;
 
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-44 text-white sm:px-6 md:pt-48 lg:px-8">
@@ -93,29 +94,11 @@ const FacilityDetails = () => {
           <h2 className="text-3xl font-black">Book This Facility</h2>
 
           <form onSubmit={handleBooking} className="mt-7 space-y-5">
-            <Input
-              label="Facility Name"
-              name="facilityName"
-              value={facility.name}
-              readOnly
-            />
-
+            <Input label="Facility Name" value={facility.name} readOnly />
             <Input label="Booking Date" name="bookingDate" type="date" />
-
-            <Input
-              label="Time Slot"
-              name="timeSlot"
-              placeholder="6 PM - 8 PM"
-            />
-
+            <Input label="Time Slot" name="timeSlot" placeholder={facility.slots} />
             <Input label="Hours" name="hours" type="number" placeholder="2" />
-
-            <Input
-              label="Price Per Hour"
-              name="price"
-              value={`৳${facility.price}`}
-              readOnly
-            />
+            <Input label="Price Per Hour" value={`৳${facility.price}`} readOnly />
 
             <button
               type="submit"
@@ -138,17 +121,9 @@ const Info = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const Input = ({
-  label,
-  name,
-  type = "text",
-  value,
-  placeholder,
-  readOnly = false,
-}) => (
+const Input = ({ label, name, type = "text", value, placeholder, readOnly = false }) => (
   <label className="block">
     <span className="text-sm font-bold text-slate-300">{label}</span>
-
     <input
       name={name}
       type={type}
@@ -157,10 +132,8 @@ const Input = ({
       readOnly={readOnly}
       required={!readOnly}
       min={type === "number" ? 1 : undefined}
-      className={`mt-2 w-full rounded-2xl border border-white/10 px-4 py-4 outline-none transition focus:border-green-400/50 ${
-        readOnly
-          ? "cursor-not-allowed bg-white/[0.03] text-slate-400"
-          : "bg-white/5 focus:bg-white/[0.07]"
+      className={`mt-2 w-full rounded-2xl border border-white/10 px-4 py-4 outline-none ${
+        readOnly ? "bg-white/[0.03] text-slate-400" : "bg-white/5"
       }`}
     />
   </label>

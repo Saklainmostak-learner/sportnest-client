@@ -1,6 +1,19 @@
 import { MapPin, Star, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import L from "leaflet";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
 
 const venues = [
   {
@@ -9,6 +22,7 @@ const venues = [
     location: "Bashundhara, Dhaka",
     rating: 4.9,
     type: "Football",
+    position: [23.8103, 90.4125],
     image:
       "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?q=80&w=1200&auto=format&fit=crop",
   },
@@ -18,6 +32,7 @@ const venues = [
     location: "Mirpur, Dhaka",
     rating: 4.8,
     type: "Swimming",
+    position: [23.8067, 90.3686],
     image:
       "https://images.unsplash.com/photo-1572331165267-854da2b10ccc?q=80&w=1200&auto=format&fit=crop",
   },
@@ -27,6 +42,7 @@ const venues = [
     location: "Dhanmondi, Dhaka",
     rating: 4.7,
     type: "Badminton",
+    position: [23.7465, 90.376],
     image:
       "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=1200&auto=format&fit=crop",
   },
@@ -48,42 +64,37 @@ const VenueExplorer = () => {
           </h2>
 
           <p className="mt-4 max-w-2xl text-slate-400">
-            Discover premium sports facilities nearby with real-time
-            availability.
+            Discover premium sports facilities nearby with real location preview.
           </p>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-          {/* LEFT MAP */}
-          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
-            <div className="relative h-[340px] overflow-hidden rounded-[28px]  md:h-[460px] lg:h-[520px]">
-              <div className="absolute inset-0 bg-[#07130d]">
-                <div className="absolute inset-0 opacity-30 bg-[linear-gradient(rgba(34,197,94,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.18)_1px,transparent_1px)] bg-[size:42px_42px]" />
+          <div className="overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
+            <div className="overflow-hidden rounded-[28px]">
+              <MapContainer
+                center={[23.8103, 90.4125]}
+                zoom={11}
+                scrollWheelZoom={false}
+                className="h-[340px] w-full md:h-[460px] lg:h-[520px]"
+              >
+                <TileLayer
+                  attribution='&copy; OpenStreetMap'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
 
-                <div className="absolute left-[10%] top-[25%] h-[2px] w-[70%] rotate-12 bg-green-400/25" />
-                <div className="absolute left-[18%] top-[55%] h-[2px] w-[60%] -rotate-6 bg-green-400/20" />
-                <div className="absolute left-[35%] top-[15%] h-[70%] w-[2px] rotate-12 bg-green-400/20" />
-                <div className="absolute left-[65%] top-[18%] h-[65%] w-[2px] -rotate-12 bg-green-400/20" />
-
-                <div className="absolute left-6 top-6 rounded-2xl border border-green-400/20 bg-black/30 px-4 py-3 backdrop-blur-xl">
-                  <p className="text-xs text-slate-400">Region</p>
-                  <h4 className="font-black text-white">Dhaka Sports Zone</h4>
-                </div>
-              </div>
-
-              {/* MAP PINS */}
-              <div className="map-pin left-[22%] top-[32%]" />
-              <div className="map-pin left-[58%] top-[48%]" />
-              <div className="map-pin left-[72%] top-[26%]" />
-
-              <div className="absolute bottom-5 left-5 rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-xl">
-                <p className="text-sm text-slate-300">Live Active Venues</p>
-                <h3 className="mt-1 text-4xl font-black">128</h3>
-              </div>
+                {venues.map((venue) => (
+                  <Marker key={venue.id} position={venue.position}>
+                    <Popup>
+                      <strong>{venue.name}</strong>
+                      <br />
+                      {venue.location}
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
             </div>
           </div>
 
-          {/* RIGHT CARDS */}
           <div className="space-y-5">
             {venues.map((venue) => (
               <motion.div
@@ -108,9 +119,7 @@ const VenueExplorer = () => {
 
                       <div className="flex items-center gap-1 text-yellow-400">
                         <Star size={16} fill="currentColor" />
-                        <span className="text-sm font-bold">
-                          {venue.rating}
-                        </span>
+                        <span className="text-sm font-bold">{venue.rating}</span>
                       </div>
                     </div>
 
@@ -125,11 +134,10 @@ const VenueExplorer = () => {
                   </div>
 
                   <Link
-                    to={`/facility/${venue.id}`}
+                    to={`/facilities?type=${venue.type}`}
                     className="mt-5 flex w-fit items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
                   >
-                    Explore Venue
-                    <ArrowRight size={17} />
+                    Explore Venue <ArrowRight size={17} />
                   </Link>
                 </div>
               </motion.div>

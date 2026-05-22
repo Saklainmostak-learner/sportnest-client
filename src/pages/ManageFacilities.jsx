@@ -1,23 +1,61 @@
-import { Edit, Trash2 } from "lucide-react";
-
-const facilities = [
-  {
-    id: 1,
-    name: "Green Field Turf",
-    type: "Football",
-    location: "Bashundhara",
-    price: 1500,
-  },
-  {
-    id: 2,
-    name: "Smash Zone Court",
-    type: "Badminton",
-    location: "Dhanmondi",
-    price: 800,
-  },
-];
+import { Trash2 } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import EmptyState from "../components/EmptyState";
+import Loading from "../components/Loading";
+import { AuthContext } from "../provider/AuthProvider";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const ManageFacilities = () => {
+  const { user } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure();
+
+  const [facilities, setFacilities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadFacilities = () => {
+    if (!user?.email) return;
+
+    setLoading(true);
+
+    fetch(`${import.meta.env.VITE_API_URL}/facilities`)
+      .then((res) => res.json())
+      .then((data) => {
+        const ownFacilities = data.filter(
+          (facility) => facility.ownerEmail === user.email,
+        );
+
+        setFacilities(ownFacilities);
+        setLoading(false);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    loadFacilities();
+  }, [user?.email]);
+
+  const handleDelete = (id) => {
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this facility?",
+    );
+
+    if (!confirmDelete) return;
+
+    axiosSecure
+      .delete(`/facilities/${id}`)
+      .then(() => {
+        toast.success("Facility deleted");
+        loadFacilities();
+      })
+      .catch((error) => toast.error(error.message));
+  };
+
+  if (loading) return <Loading />;
+
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -29,29 +67,37 @@ const ManageFacilities = () => {
           Manage My Facilities
         </h1>
 
-        <div className="mt-10 grid gap-5">
-          {facilities.map((facility) => (
-            <div
-              key={facility.id}
-              className="grid gap-4 rounded-[30px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl md:grid-cols-[1.5fr_1fr_1fr_1fr_auto] md:items-center"
-            >
-              <h3 className="text-xl font-black">{facility.name}</h3>
-              <p className="text-green-400">{facility.type}</p>
-              <p className="text-slate-400">{facility.location}</p>
-              <p className="font-black">৳ {facility.price}/hr</p>
+        <div className="mt-10">
+          {facilities.length > 0 ? (
+            <div className="grid gap-5">
+              {facilities.map((facility) => (
+                <div
+                  key={facility._id}
+                  className="grid gap-4 rounded-[30px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl md:grid-cols-[1.5fr_1fr_1fr_1fr_auto] md:items-center"
+                >
+                  <h3 className="text-xl font-black">{facility.name}</h3>
+                  <p className="text-green-400">{facility.type}</p>
+                  <p className="text-slate-400">{facility.location}</p>
+                  <p className="font-black">৳ {facility.price}/hr</p>
 
-              <div className="flex gap-3">
-                <button className="flex items-center gap-2 rounded-2xl bg-red-500 hover:bg-red-400 px-4 py-3 text-sm font-bold text-white">
-                  <Edit size={16} />
-                  Edit
-                </button>
-                <button className="flex items-center gap-2 rounded-2xl bg-red-500 hover:bg-red-400 px-4 py-3 text-sm font-bold text-white">
-                  <Trash2 size={16} />
-                  Delete
-                </button>
-              </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleDelete(facility._id)}
+                      className="flex items-center gap-2 rounded-2xl bg-red-500 px-4 py-3 text-sm font-bold text-white hover:bg-red-400"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <EmptyState
+              title="No Facilities Added"
+              message="Add your first facility to manage it here."
+            />
+          )}
         </div>
       </div>
     </section>

@@ -1,4 +1,3 @@
-
 import BookingTimeline from "../components/BookingTimeline";
 import ExploreSports from "../components/ExploreSports";
 import FeaturedFacilities from "../components/FeaturedFacilities";
@@ -15,9 +14,9 @@ const Home = () => {
       <ExploreSports />
       <VenueExplorer />
       <FeaturedFacilities />
-      <BookingTimeline/>
-      <PlayerSpotlight/>
-      <FinalArenaCTA/>
+      <BookingTimeline />
+      <PlayerSpotlight />
+      <FinalArenaCTA />
     </>
   );
 };

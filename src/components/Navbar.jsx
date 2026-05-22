@@ -5,28 +5,37 @@ import {
   CalendarCheck,
   PlusSquare,
   Building2,
-  Bell,
-  ChevronDown,
   Menu,
   X,
+  ShoppingCart,
+  Heart,
+  LogOut,
+  UserCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../provider/AuthProvider";
+import { AppStateContext } from "../provider/AppStateProvider";
 import logo from "../assets/sportnest-logo.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 35);
-    };
+  const { user, logoutUser } = useContext(AuthContext);
+  const { cart = [], favorites = [] } = useContext(AppStateContext);
 
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 35);
     window.addEventListener("scroll", handleScroll);
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    logoutUser().catch(console.log);
+  };
 
   const navLinks = [
     { name: "Home", path: "/", icon: Home },
@@ -40,26 +49,26 @@ const Navbar = () => {
     <header
       className={`fixed left-0 top-0 z-50 w-full transition-all duration-500 ${
         scrolled || open
-          ? "border-b border-white/10 bg-[#020806]/80 shadow-[0_10px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
+          ? "border-b border-white/10 bg-[#020806]/85 shadow-[0_10px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
           : "bg-transparent"
       }`}
     >
       <nav
         className={`mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-6 lg:px-8 ${
-          scrolled ? "py-2" : "py-3 md:py-4"
+          scrolled ? "py-3" : "py-5"
         }`}
       >
         <Link to="/" className="flex items-center">
           <img
             src={logo}
             alt="SportNest Logo"
-            className={`w-auto object-contain drop-shadow-[0_0_20px_rgba(34,197,94,0.75)] transition-all duration-500 hover:scale-105 ${
-              scrolled ? "h-12 sm:h-14 md:h-16" : "h-16 sm:h-20 md:h-24"
+            className={`w-auto object-contain drop-shadow-[0_0_18px_rgba(34,197,94,0.7)] transition-all duration-500 ${
+              scrolled ? "h-12" : "h-16 md:h-20"
             }`}
           />
         </Link>
 
-        <div className="hidden items-center gap-6 xl:flex">
+        <div className="hidden items-center gap-7 xl:flex">
           {navLinks.map((item) => {
             const Icon = item.icon;
 
@@ -69,41 +78,88 @@ const Navbar = () => {
                 to={item.path}
                 className={({ isActive }) =>
                   `relative flex items-center gap-2 text-sm font-semibold transition ${
-                    isActive ? "text-white" : "text-slate-300 hover:text-white"
+                    isActive
+                      ? "text-green-400"
+                      : "text-slate-300 hover:text-white"
                   }`
                 }
               >
-                {({ isActive }) => (
-                  <>
-                    <Icon size={18} />
-                    {item.name}
-                    {isActive && (
-                      <span className="absolute -bottom-5 left-0 h-[3px] w-full rounded-full bg-green-500 shadow-[0_0_14px_#22c55e]" />
-                    )}
-                  </>
-                )}
+                <Icon size={18} />
+                {item.name}
               </NavLink>
             );
           })}
         </div>
 
-        <div className="hidden items-center gap-5 xl:flex">
-          <div className="relative">
-            <Bell className="text-white" size={22} />
-            <span className="absolute -right-2 -top-2 grid h-5 w-5 place-items-center rounded-full bg-green-500 text-xs font-bold text-white">
-              3
-            </span>
-          </div>
+        <div className="hidden items-center gap-4 xl:flex">
+          <IconBadge icon={Heart} count={favorites.length} title="Favorites" />
+          <IconBadge icon={ShoppingCart} count={cart.length} title="Cart" />
 
-          <div className="flex items-center gap-2">
-            <img
-              src="https://i.pravatar.cc/100?img=12"
-              alt="User"
-              className="h-10 w-10 rounded-full border-2 border-white/40 object-cover"
-            />
-            <span className="text-sm font-semibold text-white">Mahfuz</span>
-            <ChevronDown size={16} className="text-white" />
-          </div>
+          {user ? (
+            <div className="group relative">
+              <button className="grid h-12 w-12 place-items-center rounded-full border-2 border-green-400/70 bg-white/5 p-0.5 shadow-[0_0_18px_rgba(34,197,94,0.35)] backdrop-blur-xl transition hover:scale-105">
+                <img
+                  src={user.photoURL || "https://i.ibb.co/4pDNDk1/avatar.png"}
+                  alt="User"
+                  className="h-full w-full rounded-full object-cover"
+                />
+              </button>
+
+              <div className="invisible absolute right-0 top-[125%] w-72 translate-y-3 rounded-3xl border border-white/10 bg-[#07110b]/95 p-4 opacity-0 shadow-2xl backdrop-blur-2xl transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                  <img
+                    src={
+                      user.photoURL || "https://i.ibb.co/4pDNDk1/avatar.png"
+                    }
+                    alt="User"
+                    className="h-14 w-14 rounded-full border-2 border-green-400 object-cover"
+                  />
+
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-black text-white">
+                      {user.displayName || "Player"}
+                    </p>
+                    <p className="truncate text-xs text-slate-400">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <Link
+                    to="/my-bookings"
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10"
+                  >
+                    <CalendarCheck size={18} />
+                    My Bookings
+                  </Link>
+
+                  <Link
+                    to="/manage-facilities"
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10"
+                  >
+                    <UserCircle size={18} />
+                    Dashboard
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 rounded-2xl bg-red-500 px-4 py-3 text-sm font-black text-white transition hover:bg-red-400"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="rounded-2xl bg-green-500 px-6 py-3 text-sm font-black text-white transition hover:bg-green-400"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         <button
@@ -115,7 +171,12 @@ const Navbar = () => {
       </nav>
 
       {open && (
-        <div className="mx-4 mb-4 rounded-2xl border border-white/10 bg-[#06120c]/95 p-4 shadow-2xl backdrop-blur-2xl xl:hidden">
+        <div className="mx-4 mb-4 rounded-3xl border border-white/10 bg-[#06120c]/95 p-4 shadow-2xl backdrop-blur-2xl xl:hidden">
+          <div className="mb-4 grid grid-cols-2 gap-3">
+            <MobileBadge icon={Heart} count={favorites.length} label="Favorites" />
+            <MobileBadge icon={ShoppingCart} count={cart.length} label="Cart" />
+          </div>
+
           <div className="space-y-2">
             {navLinks.map((item) => {
               const Icon = item.icon;
@@ -139,23 +200,81 @@ const Navbar = () => {
               );
             })}
           </div>
-          <div className="mt-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
-            <div className="flex items-center gap-3">
-              <img
-                src="https://i.pravatar.cc/100?img=12"
-                alt="User"
-                className="h-10 w-10 rounded-full border-2 border-white/30"
-              />
-              <div>
-                <p className="text-sm font-bold text-white">Guest User</p>
-                <p className="text-xs text-slate-400">Player Account</p>
+
+          <div className="mt-5 border-t border-white/10 pt-4">
+            {user ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-3">
+                  <img
+                    src={
+                      user.photoURL || "https://i.ibb.co/4pDNDk1/avatar.png"
+                    }
+                    alt="User"
+                    className="h-12 w-12 rounded-full border-2 border-green-400 object-cover"
+                  />
+
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-black text-white">
+                      {user.displayName || "Player"}
+                    </p>
+                    <p className="truncate text-xs text-slate-400">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full rounded-xl bg-red-500 py-3 font-bold text-white"
+                >
+                  Logout
+                </button>
               </div>
-            </div>
-            <Bell className="text-white" size={20} />
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="block w-full rounded-xl bg-green-500 py-3 text-center font-bold text-white"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       )}
     </header>
+  );
+};
+
+const IconBadge = ({ icon: Icon, count, title }) => {
+  return (
+    <button
+      type="button"
+      title={title}
+      className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white backdrop-blur-xl transition hover:border-green-400/50 hover:bg-green-500/10"
+    >
+      <Icon size={21} />
+      {count > 0 && (
+        <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full bg-green-500 px-1 text-xs font-black text-white">
+          {count}
+        </span>
+      )}
+    </button>
+  );
+};
+
+const MobileBadge = ({ icon: Icon, count, label }) => {
+  return (
+    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white">
+      <span className="flex items-center gap-2 text-sm font-bold">
+        <Icon size={18} />
+        {label}
+      </span>
+
+      <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-black">
+        {count}
+      </span>
+    </div>
   );
 };
 

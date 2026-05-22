@@ -85,17 +85,21 @@ const sports = [
 
 const Hero = () => {
   const [active, setActive] = useState(0);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchLocation, setSearchLocation] = useState("");
 
   const current = sports[active];
   const CurrentIcon = current.icon;
 
   useEffect(() => {
+    if (isSearching) return;
+
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % sports.length);
     }, 5500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isSearching]);
 
   const benefits = [
     { title: "Verified Venues", desc: "100% Trusted", icon: ShieldCheck },
@@ -179,6 +183,10 @@ const Hero = () => {
                 <MapPin size={20} />
                 <input
                   type="text"
+                  value={searchLocation}
+                  onFocus={() => setIsSearching(true)}
+                  onBlur={() => setIsSearching(false)}
+                  onChange={(e) => setSearchLocation(e.target.value)}
                   placeholder="Search location..."
                   className="w-full bg-transparent text-sm outline-none"
                 />
@@ -203,7 +211,7 @@ const Hero = () => {
               </div>
 
               <Link
-                to="/facilities"
+                to={`/facilities?type=${current.short}&search=${searchLocation}`}
                 className={`flex items-center justify-center gap-2 px-7 py-4 text-sm font-black text-white transition ${current.button}`}
               >
                 Explore Facilities <ArrowRight size={18} />

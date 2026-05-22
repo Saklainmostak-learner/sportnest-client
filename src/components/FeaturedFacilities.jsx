@@ -1,76 +1,17 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import FacilityCard from "./FacilityCard";
 
-const facilities = [
-  {
-    id: 1,
-    name: "Green Field Turf",
-    type: "Football",
-    location: "Bashundhara, Dhaka",
-    capacity: "12 Players",
-    slots: "6 Slots",
-    price: 1500,
-    image:
-      "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    id: 2,
-    name: "Aqua Swim Arena",
-    type: "Swimming",
-    location: "Mirpur, Dhaka",
-    capacity: "20 Swimmers",
-    slots: "4 Slots",
-    price: 1200,
-    image:
-      "https://images.unsplash.com/photo-1572331165267-854da2b10ccc?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Smash Zone Court",
-    type: "Badminton",
-    location: "Dhanmondi, Dhaka",
-    capacity: "4 Players",
-    slots: "8 Slots",
-    price: 800,
-    image:
-      "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Tennis World Court",
-    type: "Tennis",
-    location: "Gulshan, Dhaka",
-    capacity: "4 Players",
-    slots: "5 Slots",
-    price: 1000,
-    image:
-      "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Futsal Prime Arena",
-    type: "Futsal",
-    location: "Uttara, Dhaka",
-    capacity: "10 Players",
-    slots: "7 Slots",
-    price: 1300,
-    image:
-      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Cricket Net Zone",
-    type: "Cricket",
-    location: "Khilgaon, Dhaka",
-    capacity: "8 Players",
-    slots: "9 Slots",
-    price: 600,
-    image:
-      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1200&auto=format&fit=crop",
-  },
-];
-
 const FeaturedFacilities = () => {
+  const [facilities, setFacilities] = useState([]);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/facilities`)
+      .then((res) => res.json())
+      .then((data) => setFacilities(data.slice(0, 6)))
+      .catch((error) => console.log(error.message));
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-[#020806] px-4 py-24 text-white sm:px-6 lg:px-8">
       <div className="absolute left-0 top-20 h-72 w-72 rounded-full bg-green-500/10 blur-[100px]" />
@@ -101,11 +42,20 @@ const FeaturedFacilities = () => {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {facilities.map((facility) => (
-            <FacilityCard key={facility.id} facility={facility} />
-          ))}
-        </div>
+        {facilities.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {facilities.map((facility) => (
+              <FacilityCard key={facility._id} facility={facility} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[30px] border border-white/10 bg-white/[0.04] p-10 text-center">
+            <h3 className="text-2xl font-black">No Featured Facilities Yet</h3>
+            <p className="mt-2 text-slate-400">
+              Add facilities first. They will appear here automatically.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
