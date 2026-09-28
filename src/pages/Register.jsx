@@ -6,47 +6,60 @@ import { AuthContext } from "../provider/AuthProvider";
 import toast from "react-hot-toast";
 
 const Register = () => {
-  const { createUser, googleLogin, updateUserProfile, logoutUser } =
+  const { createUser, googleLogin } =
     useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
-    e.preventDefault();
+  const handleRegister = async (e) => {
+  e.preventDefault();
 
-    const form = e.target;
-    const name = form.name.value;
-    const email = form.email.value;
-    const photo = form.photo.value;
-    const password = form.password.value;
-    const confirmPassword = form.confirmPassword.value;
+  const form = e.target;
 
-    if (password !== confirmPassword) {
-      toast.error("Password does not match");
+  const name = form.name.value.trim();
+  const email = form.email.value.trim();
+  const photo = form.photo.value.trim();
+  const password = form.password.value;
+  const confirmPassword = form.confirmPassword.value;
+
+  if (password !== confirmPassword) {
+    toast.error("Password does not match");
+    return;
+  }
+
+  if (password.length < 6) {
+    toast.error("Password must be at least 6 characters");
+    return;
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    toast.error("Password must contain at least one uppercase letter");
+    return;
+  }
+
+  if (!/[a-z]/.test(password)) {
+    toast.error("Password must contain at least one lowercase letter");
+    return;
+  }
+
+  try {
+    const result = await createUser(
+      name,
+      email,
+      password,
+      photo
+    );
+
+    if (result?.error) {
+      toast.error(result.error.message || "Registration failed");
       return;
     }
-    if (!/(?=.*[a-z])(?=.*[A-Z]).{6,}/.test(password)) {
-      toast.error(
-        "Password must include uppercase, lowercase and minimum 6 characters",
-      );
-      return;
-    }
 
-    createUser(email, password)
-      .then(() => {
-        updateUserProfile(name, photo)
-          .then(() => {
-            toast.success("Registration successful. Please login now.");
-            logoutUser();
-            navigate("/login");
-          })
-          .catch((error) => {
-            toast.error(error.message);
-          });
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
+    toast.success("Registration successful. Please login now.");
+    navigate("/login");
+  } catch (error) {
+    toast.error(error.message || "Registration failed");
+  }
+};
 
   const handleGoogleLogin = () => {
     googleLogin()
