@@ -1,11 +1,16 @@
 import { Link } from "react-router-dom";
 import { IoIosFootball, IoIosTennisball } from "react-icons/io";
 import { PiPersonSimpleSwimFill } from "react-icons/pi";
-import { GiShuttlecock, GiCricketBat, GiWeightLiftingUp } from "react-icons/gi";
+import {
+  GiShuttlecock,
+  GiCricketBat,
+  GiWeightLiftingUp,
+} from "react-icons/gi";
 
 const sports = [
   {
     name: "Football",
+    label: "Football",
     venues: "12 Venues",
     icon: IoIosFootball,
     image:
@@ -13,6 +18,7 @@ const sports = [
   },
   {
     name: "Swimming",
+    label: "Swimming",
     venues: "04 Venues",
     icon: PiPersonSimpleSwimFill,
     image:
@@ -20,6 +26,7 @@ const sports = [
   },
   {
     name: "Badminton",
+    label: "Badminton",
     venues: "08 Venues",
     icon: GiShuttlecock,
     image:
@@ -27,6 +34,7 @@ const sports = [
   },
   {
     name: "Tennis",
+    label: "Tennis",
     venues: "06 Venues",
     icon: IoIosTennisball,
     image:
@@ -34,13 +42,15 @@ const sports = [
   },
   {
     name: "Cricket",
+    label: "Cricket",
     venues: "09 Venues",
     icon: GiCricketBat,
     image:
       "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1200&auto=format&fit=crop",
   },
   {
-    name: "Gym Zone",
+    name: "Gym",
+    label: "Gym Zone",
     venues: "15 Venues",
     icon: GiWeightLiftingUp,
     image:
@@ -62,7 +72,8 @@ const ExploreSports = () => {
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-slate-400">
-            Pick a sport and discover verified venues designed for your next game.
+            Pick a sport and discover verified venues designed for your next
+            game.
           </p>
         </div>
 
@@ -73,12 +84,12 @@ const ExploreSports = () => {
             return (
               <Link
                 key={sport.name}
-                to={`/facilities?type=${sport.name}`}
-                className="group relative min-h-[260px] overflow-hidden border-white/10 md:border-r md:border-b"
+                to={`/all-facilities?type=${sport.name}`}
+                className="group relative min-h-[260px] overflow-hidden border-white/10 md:border-b md:border-r"
               >
                 <img
                   src={sport.image}
-                  alt={sport.name}
+                  alt={sport.label}
                   className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
 
@@ -87,10 +98,13 @@ const ExploreSports = () => {
 
                 <div className="absolute inset-0 grid place-items-center p-6 text-center">
                   <div>
-                    <Icon className="mx-auto text-white transition duration-300 group-hover:scale-110 group-hover:text-green-400" size={76} />
+                    <Icon
+                      className="mx-auto text-white transition duration-300 group-hover:scale-110 group-hover:text-green-400"
+                      size={76}
+                    />
 
                     <h3 className="mt-5 text-3xl font-black uppercase tracking-tight">
-                      {sport.name}
+                      {sport.label}
                     </h3>
 
                     <p className="mt-2 text-sm font-semibold text-green-400 opacity-0 transition duration-300 group-hover:opacity-100">
