@@ -1,6 +1,4 @@
 import { PlusCircle } from "lucide-react";
-import { useContext } from "react";
-import { AuthContext } from "../provider/AuthProvider";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 
@@ -25,55 +23,76 @@ const fields = [
   },
   {
     label: "Price Per Hour",
-    name: "price",
+    name: "pricePerHour",
     type: "number",
     placeholder: "৳",
   },
   {
     label: "Capacity",
     name: "capacity",
-    type: "text",
+    type: "number",
     placeholder: "Number of Players",
   },
   {
     label: "Available Time Slots",
-    name: "slots",
+    name: "availableSlots",
     type: "text",
     placeholder: "6 PM - 8 PM, 8 PM - 10 PM",
   },
 ];
 
 const AddFacility = () => {
-  const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
 
-  const handleAddFacility = (e) => {
+  const handleAddFacility = async (e) => {
     e.preventDefault();
 
     const form = e.target;
 
     const facility = {
-      name: form.name.value,
+      name: form.name.value.trim(),
       type: form.type.value,
-      image: form.image.value,
-      location: form.location.value,
-      price: Number(form.price.value),
-      capacity: form.capacity.value,
-      slots: form.slots.value,
-      ownerEmail: user?.email,
-      description: form.description.value,
+      image: form.image.value.trim(),
+      location: form.location.value.trim(),
+      pricePerHour: Number(form.pricePerHour.value),
+      capacity: Number(form.capacity.value),
+      availableSlots: form.availableSlots.value
+        .split(",")
+        .map((slot) => slot.trim())
+        .filter(Boolean),
+      description: form.description.value.trim(),
     };
 
-    axiosSecure
-      .post("/facilities", facility)
-      .then(() => {
-        toast.success("Facility added successfully");
-        form.reset();
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+    if (facility.pricePerHour <= 0) {
+      toast.error("Price per hour must be greater than 0");
+      return;
+    }
+
+    if (facility.capacity <= 0) {
+      toast.error("Capacity must be greater than 0");
+      return;
+    }
+
+    if (facility.availableSlots.length === 0) {
+      toast.error("Please add at least one available time slot");
+      return;
+    }
+
+    try {
+      await axiosSecure.post("/facilities", facility);
+
+      toast.success("Facility added successfully");
+
+      form.reset();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to add facility",
+      );
+    }
   };
+
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
@@ -102,10 +121,10 @@ const AddFacility = () => {
             <select
               name="type"
               required
-              className="mt-2 w-full rounded-2xl text-slate-500 border border-white/10 bg-[#07110b] px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 text-slate-300 outline-none transition focus:border-green-400/50"
             >
               <option value="">Select facility type</option>
-              <option value="Football" >Football</option>
+              <option value="Football">Football</option>
               <option value="Swimming">Swimming</option>
               <option value="Badminton">Badminton</option>
               <option value="Tennis">Tennis</option>
@@ -124,7 +143,7 @@ const AddFacility = () => {
                 name={field.name}
                 type={field.type}
                 required
-                min={field.type === "number" ? 0 : undefined}
+                min={field.type === "number" ? 1 : undefined}
                 placeholder={field.placeholder}
                 className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
               />
@@ -149,7 +168,8 @@ const AddFacility = () => {
             type="submit"
             className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 md:col-span-2"
           >
-            <PlusCircle size={20} /> Add Facility
+            <PlusCircle size={20} />
+            Add Facility
           </button>
         </form>
       </div>
