@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
+
 import MainLayout from "../layouts/MainLayout";
+
 import Home from "../pages/Home";
 import AllFacilities from "../pages/AllFacilities";
 import FacilityDetails from "../pages/FacilityDetails";
@@ -8,23 +10,38 @@ import Register from "../pages/Register";
 import MyBookings from "../pages/MyBookings";
 import AddFacility from "../pages/AddFacility";
 import ManageFacilities from "../pages/ManageFacilities";
-import NotFound from "../pages/NotFound";
-import PrivateRoute from "../routes/PrivateRoute";
 import UpdateFacility from "../pages/UpdateFacility";
 import Dashboard from "../pages/Dashboard";
-import Favorites from "../pages/Favorites";
-import Cart from "../pages/Cart";
+import NotFound from "../pages/NotFound";
+
+import PrivateRoute from "../routes/PrivateRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     errorElement: <NotFound />,
+
     children: [
-      { index: true, element: <Home /> },
-      { path: "facilities", element: <AllFacilities /> },
-      { path: "login", element: <Login /> },
-      { path: "register", element: <Register /> },
+      {
+        index: true,
+        element: <Home />,
+      },
+
+      {
+        path: "all-facilities",
+        element: <AllFacilities />,
+      },
+
+      {
+        path: "login",
+        element: <Login />,
+      },
+
+      {
+        path: "register",
+        element: <Register />,
+      },
 
       {
         path: "facility/:id",
@@ -34,6 +51,7 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+
       {
         path: "my-bookings",
         element: (
@@ -42,14 +60,7 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-      {
-        path: "dashboard",
-        element: (
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
-        ),
-      },
+
       {
         path: "add-facility",
         element: (
@@ -58,6 +69,7 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+
       {
         path: "manage-facilities",
         element: (
@@ -66,6 +78,7 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+
       {
         path: "update-facility/:id",
         element: (
@@ -74,22 +87,16 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+
       {
-        path: "favorites",
+        path: "dashboard",
         element: (
           <PrivateRoute>
-            <Favorites />
+            <Dashboard />
           </PrivateRoute>
         ),
       },
-      {
-        path: "cart",
-        element: (
-          <PrivateRoute>
-            <Cart />
-          </PrivateRoute>
-        ),
-      },
+
       {
         path: "*",
         element: <NotFound />,
