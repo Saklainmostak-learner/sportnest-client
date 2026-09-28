@@ -5,39 +5,56 @@ import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const Login = () => {
   const { loginUser, googleLogin } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from || "/";
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const email = e.target.email.value;
+    const email = e.target.email.value.trim();
     const password = e.target.password.value;
 
-    loginUser(email, password)
-      .then(() => {
-        toast.success("Login successful");
-        navigate(from, { replace: true });
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+    try {
+      const result = await loginUser(email, password);
+
+      if (result?.error) {
+        toast.error(result.error.message || "Login failed");
+        return;
+      }
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/jwt`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      toast.success("Login successful");
+      navigate(from, { replace: true });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || error.message || "Login failed",
+      );
+    }
   };
 
-  const handleGoogleLogin = () => {
-    googleLogin()
-      .then(() => {
-        toast.success("Google login successful");
-        navigate(from, { replace: true });
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await googleLogin();
+
+      if (result?.error) {
+        toast.error(result.error.message || "Google login failed");
+      }
+    } catch (error) {
+      toast.error(error.message || "Google login failed");
+    }
   };
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#020806] px-4 pb-20 pt-28 text-white md:pt-36">
@@ -133,7 +150,7 @@ const Login = () => {
               </p>
 
               <h1 className="text-4xl font-black uppercase leading-tight sm:text-5xl">
-                Login / Sign Up
+                Login to SportNest
               </h1>
 
               <p className="mt-5 text-slate-400">
@@ -155,6 +172,7 @@ const Login = () => {
                       type="email"
                       name="email"
                       placeholder="you@example.com"
+                      required
                       className="w-full bg-transparent outline-none placeholder:text-slate-500"
                     />
                   </div>
@@ -171,6 +189,7 @@ const Login = () => {
                       type="password"
                       name="password"
                       placeholder="Enter password"
+                      required
                       className="w-full bg-transparent outline-none placeholder:text-slate-500"
                     />
                   </div>

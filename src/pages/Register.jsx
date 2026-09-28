@@ -42,12 +42,7 @@ const Register = () => {
     }
 
     try {
-      const result = await createUser(
-        name,
-        email,
-        password,
-        photo
-      );
+      const result = await createUser(name, email, password, photo);
 
       if (result?.error) {
         toast.error(result.error.message || "Registration failed");
@@ -166,17 +161,9 @@ const Register = () => {
   );
 };
 
-const Input = ({
-  icon: Icon,
-  name,
-  label,
-  type = "text",
-  placeholder,
-}) => (
+const Input = ({ icon: Icon, name, label, type = "text", placeholder }) => (
   <label className="block">
-    <span className="text-sm font-bold text-slate-300">
-      {label}
-    </span>
+    <span className="text-sm font-bold text-slate-300">{label}</span>
 
     <div className="mt-2 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
       <Icon size={18} className="text-green-400" />
