@@ -6,71 +6,73 @@ import { AuthContext } from "../provider/AuthProvider";
 import toast from "react-hot-toast";
 
 const Register = () => {
-  const { createUser, googleLogin } =
-    useContext(AuthContext);
+  const { createUser, googleLogin } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const form = e.target;
+    const form = e.target;
 
-  const name = form.name.value.trim();
-  const email = form.email.value.trim();
-  const photo = form.photo.value.trim();
-  const password = form.password.value;
-  const confirmPassword = form.confirmPassword.value;
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const photo = form.photo.value.trim();
+    const password = form.password.value;
+    const confirmPassword = form.confirmPassword.value;
 
-  if (password !== confirmPassword) {
-    toast.error("Password does not match");
-    return;
-  }
-
-  if (password.length < 6) {
-    toast.error("Password must be at least 6 characters");
-    return;
-  }
-
-  if (!/[A-Z]/.test(password)) {
-    toast.error("Password must contain at least one uppercase letter");
-    return;
-  }
-
-  if (!/[a-z]/.test(password)) {
-    toast.error("Password must contain at least one lowercase letter");
-    return;
-  }
-
-  try {
-    const result = await createUser(
-      name,
-      email,
-      password,
-      photo
-    );
-
-    if (result?.error) {
-      toast.error(result.error.message || "Registration failed");
+    if (password !== confirmPassword) {
+      toast.error("Password does not match");
       return;
     }
 
-    toast.success("Registration successful. Please login now.");
-    navigate("/login");
-  } catch (error) {
-    toast.error(error.message || "Registration failed");
-  }
-};
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
 
-  const handleGoogleLogin = () => {
-    googleLogin()
-      .then(() => {
-        toast.success("Google login successful");
-        navigate("/");
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+    if (!/[A-Z]/.test(password)) {
+      toast.error("Password must contain at least one uppercase letter");
+      return;
+    }
+
+    if (!/[a-z]/.test(password)) {
+      toast.error("Password must contain at least one lowercase letter");
+      return;
+    }
+
+    try {
+      const result = await createUser(
+        name,
+        email,
+        password,
+        photo
+      );
+
+      if (result?.error) {
+        toast.error(result.error.message || "Registration failed");
+        return;
+      }
+
+      toast.success("Registration successful. Please login now.");
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.message || "Registration failed");
+    }
   };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await googleLogin();
+
+      if (result?.error) {
+        toast.error(result.error.message || "Google login failed");
+      }
+    } catch (error) {
+      toast.error(error.message || "Google login failed");
+    }
+  };
+
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-20 pt-28 text-white md:pt-36">
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
@@ -99,18 +101,21 @@ const Register = () => {
               label="Name"
               placeholder="Your name"
             />
+
             <Input
               icon={Mail}
               name="email"
               label="Email"
               placeholder="you@example.com"
             />
+
             <Input
               icon={Image}
               name="photo"
               label="Photo URL"
               placeholder="https://..."
             />
+
             <Input
               icon={Lock}
               name="password"
@@ -118,6 +123,7 @@ const Register = () => {
               type="password"
               placeholder="At least 6 characters"
             />
+
             <Input
               icon={Lock}
               name="confirmPassword"
@@ -125,6 +131,7 @@ const Register = () => {
               type="password"
               placeholder="Confirm your password"
             />
+
             <p className="text-xs text-slate-400">
               Password must include uppercase, lowercase and minimum 6
               characters.
@@ -143,7 +150,8 @@ const Register = () => {
             onClick={handleGoogleLogin}
             className="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold text-white transition hover:bg-white/10"
           >
-            <FaChrome size={20} /> Continue with Google
+            <FaChrome size={20} />
+            Continue with Google
           </button>
 
           <p className="mt-6 text-center text-slate-400">
@@ -158,11 +166,21 @@ const Register = () => {
   );
 };
 
-const Input = ({ icon: Icon, name, label, type = "text", placeholder }) => (
+const Input = ({
+  icon: Icon,
+  name,
+  label,
+  type = "text",
+  placeholder,
+}) => (
   <label className="block">
-    <span className="text-sm font-bold text-slate-300">{label}</span>
+    <span className="text-sm font-bold text-slate-300">
+      {label}
+    </span>
+
     <div className="mt-2 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
       <Icon size={18} className="text-green-400" />
+
       <input
         name={name}
         type={type}
