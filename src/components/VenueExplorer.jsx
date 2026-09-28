@@ -1,7 +1,12 @@
 import { MapPin, Star, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+} from "react-leaflet";
 import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -60,15 +65,17 @@ const VenueExplorer = () => {
           </p>
 
           <h2 className="text-4xl font-black tracking-tight md:text-5xl">
-            Explore Venues Near You
+            Explore Venues Around Dhaka
           </h2>
 
           <p className="mt-4 max-w-2xl text-slate-400">
-            Discover premium sports facilities nearby with real location preview.
+            Preview popular sports areas around Dhaka and explore facilities
+            by sport type.
           </p>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+          {/* MAP */}
           <div className="overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
             <div className="overflow-hidden rounded-[28px]">
               <MapContainer
@@ -78,12 +85,15 @@ const VenueExplorer = () => {
                 className="h-[340px] w-full md:h-[460px] lg:h-[520px]"
               >
                 <TileLayer
-                  attribution='&copy; OpenStreetMap'
+                  attribution="&copy; OpenStreetMap contributors"
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
                 {venues.map((venue) => (
-                  <Marker key={venue.id} position={venue.position}>
+                  <Marker
+                    key={venue.id}
+                    position={venue.position}
+                  >
                     <Popup>
                       <strong>{venue.name}</strong>
                       <br />
@@ -95,11 +105,13 @@ const VenueExplorer = () => {
             </div>
           </div>
 
+          {/* VENUE CARDS */}
           <div className="space-y-5">
             {venues.map((venue) => (
               <motion.div
                 key={venue.id}
                 whileHover={{ x: 6 }}
+                transition={{ duration: 0.25 }}
                 className="group flex flex-col gap-4 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl transition sm:flex-row"
               >
                 <div className="h-32 w-full overflow-hidden rounded-2xl sm:w-36">
@@ -112,14 +124,20 @@ const VenueExplorer = () => {
 
                 <div className="flex flex-1 flex-col justify-between">
                   <div>
-                    <div className="mb-3 flex items-center justify-between">
+                    <div className="mb-3 flex items-center justify-between gap-3">
                       <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-black uppercase text-green-400">
                         {venue.type}
                       </span>
 
                       <div className="flex items-center gap-1 text-yellow-400">
-                        <Star size={16} fill="currentColor" />
-                        <span className="text-sm font-bold">{venue.rating}</span>
+                        <Star
+                          size={16}
+                          fill="currentColor"
+                        />
+
+                        <span className="text-sm font-bold">
+                          {venue.rating}
+                        </span>
                       </div>
                     </div>
 
@@ -134,10 +152,11 @@ const VenueExplorer = () => {
                   </div>
 
                   <Link
-                    to={`/facilities?type=${venue.type}`}
+                    to={`/all-facilities?type=${venue.type}`}
                     className="mt-5 flex w-fit items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
                   >
-                    Explore Venue <ArrowRight size={17} />
+                    Explore {venue.type}
+                    <ArrowRight size={17} />
                   </Link>
                 </div>
               </motion.div>
