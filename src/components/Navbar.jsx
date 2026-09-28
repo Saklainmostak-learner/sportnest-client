@@ -1,4 +1,5 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+
 import {
   Home,
   Dumbbell,
@@ -7,15 +8,15 @@ import {
   Building2,
   Menu,
   X,
-  ShoppingCart,
-  Heart,
   LogOut,
   UserCircle,
 } from "lucide-react";
 
 import { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+
 import { AuthContext } from "../provider/AuthProvider";
-import { AppStateContext } from "../provider/AppStateProvider";
 import logo from "../assets/sportnest-logo.png";
 
 const Navbar = () => {
@@ -23,27 +24,79 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const { user, logoutUser } = useContext(AuthContext);
-  const { cart = [], favorites = [] } = useContext(AppStateContext);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 35);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 35);
+    };
+
     window.addEventListener("scroll", handleScroll);
+
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  const handleLogout = () => {
-    logoutUser().catch(console.log);
+  const handleLogout = async () => {
+    try {
+      // Better Auth session logout
+      await logoutUser();
+
+      // JWT HTTPOnly cookie clear
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/logout`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      toast.success("Logged out successfully");
+
+      setOpen(false);
+
+      navigate("/");
+    } catch (error) {
+      toast.error(error.message || "Logout failed");
+    }
   };
 
-  const navLinks = [
-    { name: "Home", path: "/", icon: Home },
-    { name: "All Facilities", path: "/facilities", icon: Dumbbell },
-    { name: "My Bookings", path: "/my-bookings", icon: CalendarCheck },
-    { name: "Add Facility", path: "/add-facility", icon: PlusSquare },
-    { name: "Manage Facilities", path: "/manage-facilities", icon: Building2 },
+  const publicLinks = [
+    {
+      name: "Home",
+      path: "/",
+      icon: Home,
+    },
+    {
+      name: "All Facilities",
+      path: "/all-facilities",
+      icon: Dumbbell,
+    },
   ];
+
+  const privateLinks = [
+    {
+      name: "My Bookings",
+      path: "/my-bookings",
+      icon: CalendarCheck,
+    },
+    {
+      name: "Add Facility",
+      path: "/add-facility",
+      icon: PlusSquare,
+    },
+    {
+      name: "Manage Facilities",
+      path: "/manage-facilities",
+      icon: Building2,
+    },
+  ];
+
+  const navLinks = user ? [...publicLinks, ...privateLinks] : publicLinks;
 
   return (
     <header
@@ -58,6 +111,7 @@ const Navbar = () => {
           scrolled ? "py-3" : "py-5"
         }`}
       >
+        {/* LOGO */}
         <Link to="/" className="flex items-center">
           <img
             src={logo}
@@ -68,6 +122,7 @@ const Navbar = () => {
           />
         </Link>
 
+        {/* DESKTOP NAV LINKS */}
         <div className="hidden items-center gap-7 xl:flex">
           {navLinks.map((item) => {
             const Icon = item.icon;
@@ -85,44 +140,51 @@ const Navbar = () => {
                 }
               >
                 <Icon size={18} />
+
                 {item.name}
               </NavLink>
             );
           })}
         </div>
 
+        {/* DESKTOP USER AREA */}
         <div className="hidden items-center gap-4 xl:flex">
-          <IconBadge icon={Heart} count={favorites.length} title="Favorites" />
-          <IconBadge icon={ShoppingCart} count={cart.length} title="Cart" />
-
           {user ? (
             <div className="group relative">
-              <button className="grid h-12 w-12 place-items-center rounded-full border-2 border-green-400/70 bg-white/5 p-0.5 shadow-[0_0_18px_rgba(34,197,94,0.35)] backdrop-blur-xl transition hover:scale-105">
+              {/* PROFILE BUTTON */}
+              <button
+                type="button"
+                className="grid h-12 w-12 place-items-center rounded-full border-2 border-green-400/70 bg-white/5 p-0.5 shadow-[0_0_18px_rgba(34,197,94,0.35)] backdrop-blur-xl transition hover:scale-105"
+              >
                 <img
-                  src={user.photoURL || "https://i.ibb.co/4pDNDk1/avatar.png"}
-                  alt="User"
+                  src={user.image || "https://i.ibb.co/4pDNDk1/avatar.png"}
+                  alt={user.name || "User"}
                   className="h-full w-full rounded-full object-cover"
                 />
               </button>
 
+              {/* PROFILE DROPDOWN */}
               <div className="invisible absolute right-0 top-[125%] w-72 translate-y-3 rounded-3xl border border-white/10 bg-[#07110b]/95 p-4 opacity-0 shadow-2xl backdrop-blur-2xl transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                {/* USER INFO */}
                 <div className="flex items-center gap-3 border-b border-white/10 pb-4">
                   <img
-                    src={user.photoURL || "https://i.ibb.co/4pDNDk1/avatar.png"}
-                    alt="User"
+                    src={user.image || "https://i.ibb.co/4pDNDk1/avatar.png"}
+                    alt={user.name || "User"}
                     className="h-14 w-14 rounded-full border-2 border-green-400 object-cover"
                   />
 
                   <div className="min-w-0">
                     <p className="truncate text-sm font-black text-white">
-                      {user.displayName || "Player"}
+                      {user.name || "Player"}
                     </p>
+
                     <p className="truncate text-xs text-slate-400">
                       {user.email}
                     </p>
                   </div>
                 </div>
 
+                {/* DROPDOWN LINKS */}
                 <div className="mt-4 space-y-2">
                   <Link
                     to="/my-bookings"
@@ -130,6 +192,22 @@ const Navbar = () => {
                   >
                     <CalendarCheck size={18} />
                     My Bookings
+                  </Link>
+
+                  <Link
+                    to="/add-facility"
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10"
+                  >
+                    <PlusSquare size={18} />
+                    Add Facility
+                  </Link>
+
+                  <Link
+                    to="/manage-facilities"
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10"
+                  >
+                    <Building2 size={18} />
+                    Manage My Facilities
                   </Link>
 
                   <Link
@@ -141,6 +219,7 @@ const Navbar = () => {
                   </Link>
 
                   <button
+                    type="button"
                     onClick={handleLogout}
                     className="flex w-full items-center gap-3 rounded-2xl bg-red-500 px-4 py-3 text-sm font-black text-white transition hover:bg-red-400"
                   >
@@ -160,7 +239,9 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* MOBILE MENU BUTTON */}
         <button
+          type="button"
           onClick={() => setOpen(!open)}
           className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5 text-white backdrop-blur-xl xl:hidden"
         >
@@ -168,17 +249,10 @@ const Navbar = () => {
         </button>
       </nav>
 
+      {/* MOBILE MENU */}
       {open && (
         <div className="mx-4 mb-4 rounded-3xl border border-white/10 bg-[#06120c]/95 p-4 shadow-2xl backdrop-blur-2xl xl:hidden">
-          <div className="mb-4 grid grid-cols-2 gap-3">
-            <MobileBadge
-              icon={Heart}
-              count={favorites.length}
-              label="Favorites"
-            />
-            <MobileBadge icon={ShoppingCart} count={cart.length} label="Cart" />
-          </div>
-
+          {/* MOBILE NAV LINKS */}
           <div className="space-y-2">
             {navLinks.map((item) => {
               const Icon = item.icon;
@@ -197,36 +271,80 @@ const Navbar = () => {
                   }
                 >
                   <Icon size={18} />
+
                   {item.name}
                 </NavLink>
               );
             })}
           </div>
 
+          {/* MOBILE USER AREA */}
           <div className="mt-5 border-t border-white/10 pt-4">
             {user ? (
               <div className="space-y-3">
+                {/* USER INFO */}
                 <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-3">
                   <img
-                    src={user.photoURL || "https://i.ibb.co/4pDNDk1/avatar.png"}
-                    alt="User"
+                    src={user.image || "https://i.ibb.co/4pDNDk1/avatar.png"}
+                    alt={user.name || "User"}
                     className="h-12 w-12 rounded-full border-2 border-green-400 object-cover"
                   />
 
                   <div className="min-w-0">
                     <p className="truncate text-sm font-black text-white">
-                      {user.displayName || "Player"}
+                      {user.name || "Player"}
                     </p>
+
                     <p className="truncate text-xs text-slate-400">
                       {user.email}
                     </p>
                   </div>
                 </div>
 
-                <button
-                  onClick={handleLogout}
-                  className="w-full rounded-xl bg-red-500 py-3 font-bold text-white"
+                {/* MOBILE PRIVATE LINKS */}
+                <Link
+                  to="/my-bookings"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3 font-bold text-white transition hover:bg-white/10"
                 >
+                  <CalendarCheck size={18} />
+                  My Bookings
+                </Link>
+
+                <Link
+                  to="/add-facility"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3 font-bold text-white transition hover:bg-white/10"
+                >
+                  <PlusSquare size={18} />
+                  Add Facility
+                </Link>
+
+                <Link
+                  to="/manage-facilities"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3 font-bold text-white transition hover:bg-white/10"
+                >
+                  <Building2 size={18} />
+                  Manage My Facilities
+                </Link>
+
+                <Link
+                  to="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3 font-bold text-white transition hover:bg-white/10"
+                >
+                  <UserCircle size={18} />
+                  Dashboard
+                </Link>
+
+                {/* MOBILE LOGOUT */}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 py-3 font-bold text-white transition hover:bg-red-400"
+                >
+                  <LogOut size={18} />
                   Logout
                 </button>
               </div>
@@ -243,128 +361,6 @@ const Navbar = () => {
         </div>
       )}
     </header>
-  );
-};
-
-const IconBadge = ({ icon: Icon, count, title }) => {
-  const { cart = [], favorites = [] } = useContext(AppStateContext);
-  const items = title === "Cart" ? cart : favorites;
-  const path = title === "Cart" ? "/cart" : "/favorites";
-
-  return (
-    <div className="group relative">
-      <Link
-        to={path}
-        title={title}
-        className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white backdrop-blur-xl transition hover:border-green-400/50 hover:bg-green-500/10"
-      >
-        <Icon size={21} />
-        {count > 0 && (
-          <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full bg-green-500 px-1 text-xs font-black text-white">
-            {count}
-          </span>
-        )}
-      </Link>
-
-      <div className="invisible absolute right-0 top-[125%] z-50 w-80 translate-y-3 rounded-3xl border border-white/10 bg-[#07110b]/95 p-4 opacity-0 shadow-2xl backdrop-blur-2xl transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-        <h3 className="mb-3 text-sm font-black text-white">{title}</h3>
-
-        {items.length > 0 ? (
-          <div className="max-h-80 space-y-3 overflow-y-auto pr-1">
-            {items.map((item) => (
-              <div
-                key={item._id || item.id}
-                className="flex gap-3 rounded-2xl bg-white/5 p-3"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-14 w-14 rounded-xl object-cover"
-                />
-
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-white">
-                    {item.name}
-                  </p>
-                  <p className="truncate text-xs text-slate-400">
-                    {item.location}
-                  </p>
-                  <p className="text-xs font-bold text-green-400">
-                    ৳{item.price}/hr
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="rounded-2xl bg-white/5 p-4 text-sm text-slate-400">
-            No items added yet.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const MobileBadge = ({ icon: Icon, count, label }) => {
-  const { cart = [], favorites = [] } = useContext(AppStateContext);
-  const [show, setShow] = useState(false);
-
-  const items = label === "Cart" ? cart : favorites;
-
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setShow(!show)}
-        className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white"
-      >
-        <span className="flex items-center gap-2 text-sm font-bold">
-          <Icon size={18} />
-          {label}
-        </span>
-
-        <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-black">
-          {count}
-        </span>
-      </button>
-
-      {show && (
-        <div className="mt-3 space-y-2 rounded-2xl bg-black/30 p-3">
-          {items.length > 0 ? (
-            items.map((item) => (
-              <div
-                key={item._id || item.id}
-                className="flex gap-3 rounded-xl bg-white/5 p-3"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-12 w-12 rounded-lg object-cover"
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-white">
-                    {item.name}
-                  </p>
-                  <p className="truncate text-xs text-slate-400">
-                    {item.location}
-                  </p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-slate-400">No items added yet.</p>
-          )}
-          <Link
-            to={label === "Cart" ? "/cart" : "/favorites"}
-            onClick={() => setShow(false)}
-            className="mt-3 block rounded-xl bg-green-500 py-3 text-center text-sm font-black text-white"
-          >
-            View {label}
-          </Link>
-        </div>
-      )}
-    </div>
   );
 };
 
