@@ -1,16 +1,39 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import EmptyState from "./EmptyState";
 import FacilityCard from "./FacilityCard";
+import Loading from "./Loading";
 
 const FeaturedFacilities = () => {
   const [facilities, setFacilities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/facilities`)
-      .then((res) => res.json())
-      .then((data) => setFacilities(data.slice(0, 6)))
-      .catch((error) => console.log(error.message));
+    const loadFeaturedFacilities = async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/facilities`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load featured facilities");
+        }
+
+        const data = await response.json();
+
+        setFacilities(data.slice(0, 6));
+      } catch (error) {
+        console.error(error);
+        setFacilities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFeaturedFacilities();
   }, []);
 
   return (
@@ -25,21 +48,37 @@ const FeaturedFacilities = () => {
             <h2 className="text-4xl font-black tracking-tight md:text-5xl">
               Featured Facilities
             </h2>
+
+            <p className="mt-4 max-w-2xl text-slate-400">
+              Explore some of the available sports facilities and book the
+              perfect venue for your next game.
+            </p>
           </div>
 
-          <Link to="/facilities" className="rounded-2xl bg-green-500 px-6 py-3 font-bold text-white">
+          <Link
+            to="/all-facilities"
+            className="w-fit rounded-2xl bg-green-500 px-6 py-3 font-bold text-white transition hover:bg-green-400"
+          >
             View All Facilities
           </Link>
         </div>
 
-        {facilities.length > 0 ? (
+        {loading ? (
+          <Loading />
+        ) : facilities.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {facilities.map((facility) => (
-              <FacilityCard key={facility._id || facility.id} facility={facility} />
+              <FacilityCard
+                key={facility._id}
+                facility={facility}
+              />
             ))}
           </div>
         ) : (
-          <EmptyState title="No Featured Facilities" message="Add facilities first." />
+          <EmptyState
+            title="No Featured Facilities"
+            message="Facilities will appear here once they are added."
+          />
         )}
       </div>
     </section>
