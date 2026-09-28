@@ -1,89 +1,59 @@
-import { createContext, useEffect, useState } from "react";
-import {
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
-} from "firebase/auth";
-import axios from "axios";
-import { auth } from "../firebase/firebase.config";
+import { createContext, useContext } from "react";
+import { authClient } from "../lib/auth-client";
 
 export const AuthContext = createContext(null);
 
-const googleProvider = new GoogleAuthProvider();
-
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: session,
+    isPending,
+    error,
+    refetch,
+  } = authClient.useSession();
 
-  const createUser = (email, password) => {
-    setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
+  const user = session?.user || null;
 
-  const loginUser = (email, password) => {
-    setLoading(true);
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const googleLogin = () => {
-    setLoading(true);
-    return signInWithPopup(auth, googleProvider);
-  };
-
-  const updateUserProfile = (name, photo) => {
-    return updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photo,
+  const createUser = async (name, email, password, photoURL) => {
+    return await authClient.signUp.email({
+      name,
+      email,
+      password,
+      image: photoURL,
     });
   };
 
-  const logoutUser = () => {
-    setLoading(true);
-    return signOut(auth);
+  const loginUser = async (email, password) => {
+    return await authClient.signIn.email({
+      email,
+      password,
+    });
   };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setLoading(true);
-
-      try {
-        if (currentUser?.email) {
-          const res = await axios.post(
-            `${import.meta.env.VITE_API_URL}/jwt`,
-            { email: currentUser.email },
-            { withCredentials: true },
-          );
-
-          localStorage.setItem("sportnest_token", res.data.token);
-
-          setUser(currentUser);
-        } else {
-          setUser(null);
-
-          await axios.post(
-            `${import.meta.env.VITE_API_URL}/logout`,
-            {},
-            { withCredentials: true },
-          );
-        }
-      } catch (error) {
-        console.log(error.message);
-        setUser(currentUser || null);
-      } finally {
-        setLoading(false);
-      }
+  const googleLogin = async () => {
+    return await authClient.signIn.social({
+      provider: "google",
+      callbackURL: window.location.origin,
     });
+  };
 
-    return () => unsubscribe();
-  }, []);
+  const updateUserProfile = async (name, photoURL) => {
+    return await authClient.updateUser({
+      name,
+      image: photoURL,
+    });
+  };
+
+  const logoutUser = async () => {
+    return await authClient.signOut();
+  };
 
   const authInfo = {
     user,
-    loading,
+    session,
+    loading: isPending,
+    error,
+    refetch,
+
     createUser,
     loginUser,
     googleLogin,
@@ -92,8 +62,12 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={authInfo}>
+      {children}
+    </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);
 
 export default AuthProvider;
