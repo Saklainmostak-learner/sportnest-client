@@ -1,53 +1,38 @@
 # SportNest
 
-SportNest is a full-stack sports facility booking platform built with the MERN Stack and Better Auth.
-
-Users can explore sports facilities, search and filter venues, book available time slots, manage their own bookings, and add or manage facilities they own.
+SportNest is a full-stack sports facility booking platform built with the MERN Stack and Better Auth. Users can browse sports facilities, search and filter venues, book available time slots, manage their own bookings, and add or manage facilities they own.
 
 ## Live Links
 
-### Client
-https://sportnest-client-seven.vercel.app/
+- Client: https://sportnest-client-seven.vercel.app/
+- Server: https://sportnest-server-h0si.onrender.com
 
-### Server
-https://sportnest-server-h0si.onrender.com
+## Purpose
 
-## Project Purpose
-
-The purpose of SportNest is to provide a simple and modern platform where users can discover and reserve sports facilities such as football turfs, swimming pools, badminton courts, tennis courts, cricket facilities, and gyms.
-
-Facility owners can also add, update, and manage their own facilities through protected routes.
+SportNest provides a simple reservation flow for sports facilities such as football turfs, swimming pools, badminton courts, tennis courts, cricket facilities, and gyms. Authenticated users can make bookings and facility owners can manage their own listings securely.
 
 ## Key Features
 
-- Better Auth authentication
-- Email and password login
+- Better Auth email/password authentication
 - Google social login
-- JWT protected private API routes
-- HTTPOnly cookie based authorization
-- Browse all sports facilities
-- Search facilities by name
-- Filter facilities by sport type
-- View facility details
-- Book facilities by date and available time slot
-- Automatic booking price calculation
-- View personal bookings
-- Cancel bookings
-- Add new sports facilities
-- Update owned facilities
-- Delete owned facilities
+- JWT-protected private APIs using HTTPOnly cookies
+- Browse all facilities
+- Facility-name search using MongoDB `$regex`
+- Sport-type filtering using MongoDB `$in`
+- Facility details with price, capacity, location and available slots
+- Date picker, available slot selector and time picker for booking
+- Server-side booking price calculation
+- Personal booking list and cancellation
+- Add, update and delete owned facilities
 - Owner-specific facility management
-- User dashboard with booking and facility statistics
-- Custom 404 page
-- Loading states
-- Responsive user interface
+- Dashboard statistics
+- Responsive UI
+- Dark/light theme toggle
 - Framer Motion animations
-- Interactive venue map using Leaflet
-- MongoDB database integration
+- Leaflet venue map
+- Custom 404 page and loading states
 
-## Technologies Used
-
-### Frontend
+## Frontend Packages
 
 - React
 - React Router
@@ -61,7 +46,7 @@ Facility owners can also add, update, and manage their own facilities through pr
 - React Leaflet
 - Leaflet
 
-### Backend
+## Backend Packages
 
 - Node.js
 - Express.js
@@ -70,36 +55,18 @@ Facility owners can also add, update, and manage their own facilities through pr
 - JSON Web Token
 - Cookie Parser
 - CORS
-
-## Authentication and Security
-
-SportNest uses Better Auth for user authentication.
-
-Private API routes are protected using JWT tokens stored in HTTPOnly cookies.
-
-The server determines authenticated user information from the verified token instead of trusting user email values sent from the client.
-
-Protected actions include:
-
-- Adding facilities
-- Updating owned facilities
-- Deleting owned facilities
-- Viewing personal facilities
-- Creating bookings
-- Viewing personal bookings
-- Cancelling bookings
-- Viewing dashboard statistics
+- dotenv
 
 ## Main Routes
 
-### Public Routes
+### Public
 
 - `/`
 - `/all-facilities`
 - `/login`
 - `/register`
 
-### Private Routes
+### Private
 
 - `/facility/:id`
 - `/my-bookings`
@@ -108,46 +75,11 @@ Protected actions include:
 - `/update-facility/:id`
 - `/dashboard`
 
-## Search and Filter
+## Security
 
-The facilities page supports:
+The server determines the authenticated user's email from a verified JWT instead of trusting an email value sent by the client. Facility update/delete operations verify ownership on the server. Booking totals are calculated on the server from the saved facility price.
 
-- Facility name search using MongoDB `$regex`
-- Sport type filtering using MongoDB `$in`
-
-Users can use search and sport filters together.
-
-## Facility Management
-
-Authenticated users can add facilities with:
-
-- Facility name
-- Facility type
-- Image URL
-- Location
-- Price per hour
-- Capacity
-- Available time slots
-- Description
-- Owner email
-
-The owner email is automatically associated with the authenticated user on the server.
-
-Users can only update or delete facilities that they own.
-
-## Booking System
-
-Authenticated users can book a facility by selecting:
-
-- Booking date
-- Available time slot
-- Number of hours
-
-The final booking price is calculated on the server using the facility's price per hour.
-
-Users can also view and cancel their own bookings.
-
-## Installation
+## Local Setup
 
 ### Client
 
@@ -156,3 +88,45 @@ git clone https://github.com/Saklainmostak-learner/sportnest-client.git
 cd sportnest-client
 npm install
 npm run dev
+```
+
+Create a client `.env` file:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+### Server
+
+```bash
+git clone https://github.com/Saklainmostak-learner/sportnest-server.git
+cd sportnest-server
+npm install
+npm run dev
+```
+
+After configuring MongoDB credentials, seed sample facilities once if the database has fewer than six facilities:
+
+```bash
+npm run seed
+```
+
+Create a server `.env` file:
+
+```env
+PORT=5000
+DB_USER=your_mongodb_database_user
+DB_PASS=your_mongodb_database_password
+JWT_SECRET=your_jwt_secret
+BETTER_AUTH_SECRET=your_better_auth_secret
+BETTER_AUTH_URL=http://localhost:5000
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NODE_ENV=development
+```
+
+Never commit `.env` files or credentials to GitHub.
+
+## Author
+
+Developed by Saklain Mostak.

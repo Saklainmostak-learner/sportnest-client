@@ -8,11 +8,13 @@ import Loading from "./Loading";
 const FeaturedFacilities = () => {
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const loadFeaturedFacilities = async () => {
       try {
         setLoading(true);
+        setErrorMessage("");
 
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/facilities`
@@ -28,6 +30,7 @@ const FeaturedFacilities = () => {
       } catch (error) {
         console.error(error);
         setFacilities([]);
+        setErrorMessage("Featured facilities could not be loaded. Please try again after the server/database is available.");
       } finally {
         setLoading(false);
       }
@@ -65,6 +68,11 @@ const FeaturedFacilities = () => {
 
         {loading ? (
           <Loading />
+        ) : errorMessage ? (
+          <EmptyState
+            title="Unable to Load Facilities"
+            message={errorMessage}
+          />
         ) : facilities.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {facilities.map((facility) => (

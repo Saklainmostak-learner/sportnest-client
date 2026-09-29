@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import EmptyState from "../components/EmptyState";
 import Loading from "../components/Loading";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import BackButton from "../components/BackButton";
 
 const MyBookings = () => {
   const axiosSecure = useAxiosSecure();
@@ -71,6 +72,7 @@ const MyBookings = () => {
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        <BackButton fallback="/" />
         <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
           Booking Dashboard
         </p>
@@ -117,6 +119,7 @@ const MyBookings = () => {
 
                     <p className="text-slate-400">
                       {booking.timeSlot}
+                      {booking.bookingTime ? ` • ${booking.bookingTime}` : ""}
                     </p>
 
                     <p className="font-black text-green-400">

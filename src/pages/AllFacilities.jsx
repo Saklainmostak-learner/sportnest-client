@@ -5,6 +5,8 @@ import { MapPin, Search, RotateCcw } from "lucide-react";
 import FacilityCard from "../components/FacilityCard";
 import EmptyState from "../components/EmptyState";
 import Loading from "../components/Loading";
+import BackButton from "../components/BackButton";
+import { normalizeFacilities } from "../utils/facility";
 
 const AllFacilities = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,6 +20,7 @@ const AllFacilities = () => {
   const [type, setType] = useState(initialType);
 
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Search debounce
   useEffect(() => {
@@ -33,6 +36,7 @@ const AllFacilities = () => {
     const loadFacilities = async () => {
       try {
         setLoading(true);
+        setErrorMessage("");
 
         const params = new URLSearchParams();
 
@@ -58,7 +62,7 @@ const AllFacilities = () => {
 
         const data = await response.json();
 
-        setFacilities(data);
+        setFacilities(normalizeFacilities(data));
 
         // URL sync
         setSearchParams(params, {
@@ -68,6 +72,7 @@ const AllFacilities = () => {
         console.error(error);
 
         setFacilities([]);
+        setErrorMessage("Facilities could not be loaded from the server.");
       } finally {
         setLoading(false);
       }
@@ -86,6 +91,7 @@ const AllFacilities = () => {
   return (
     <section className="min-h-screen bg-[#020806] pt-36 text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <BackButton fallback="/" label="Back Home" />
         {/* HEADER */}
         <div className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/[0.04] p-8 backdrop-blur-2xl md:p-12">
           <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-green-500/10 blur-[100px]" />
@@ -165,6 +171,11 @@ const AllFacilities = () => {
         <div className="py-16">
           {loading ? (
             <Loading />
+          ) : errorMessage ? (
+            <EmptyState
+              title="Unable to Load Facilities"
+              message={errorMessage}
+            />
           ) : facilities.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {facilities.map((facility) => (

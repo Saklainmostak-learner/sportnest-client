@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import { AuthContext } from "../provider/AuthProvider";
+import BackButton from "../components/BackButton";
 
 const fields = [
   {
@@ -106,6 +107,7 @@ const AddFacility = () => {
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
+        <BackButton fallback="/" />
         <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
           Owner Dashboard
         </p>

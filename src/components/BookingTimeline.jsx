@@ -57,7 +57,7 @@ const BookingTimeline = () => {
             return (
               <div
                 key={step.number}
-                className="relative rounded-[32px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-2xl transition hover:-translate-y-2 hover:border-green-400/40 hover:bg-green-500/10"
+                className="relative rounded-[32px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-2xl transition hover:border-green-400/40 hover:bg-green-500/10"
               >
                 <div className="mb-10 flex items-center justify-between">
                   <span className="text-7xl font-black text-white/10">

@@ -110,8 +110,6 @@ const VenueExplorer = () => {
             {venues.map((venue) => (
               <motion.div
                 key={venue.id}
-                whileHover={{ x: 6 }}
-                transition={{ duration: 0.25 }}
                 className="group flex flex-col gap-4 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl transition sm:flex-row"
               >
                 <div className="h-32 w-full overflow-hidden rounded-2xl sm:w-36">

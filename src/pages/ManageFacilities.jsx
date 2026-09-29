@@ -5,6 +5,8 @@ import EmptyState from "../components/EmptyState";
 import Loading from "../components/Loading";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import { Link } from "react-router-dom";
+import BackButton from "../components/BackButton";
+import { normalizeFacilities } from "../utils/facility";
 
 const ManageFacilities = () => {
   const axiosSecure = useAxiosSecure();
@@ -21,7 +23,7 @@ const ManageFacilities = () => {
 
       const response = await axiosSecure.get("/my-facilities");
 
-      setFacilities(response.data);
+      setFacilities(normalizeFacilities(response.data));
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
@@ -85,6 +87,7 @@ const ManageFacilities = () => {
   return (
     <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        <BackButton fallback="/" />
         <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
           Owner Control
         </p>
