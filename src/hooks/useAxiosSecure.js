@@ -5,16 +5,6 @@ const axiosSecure = axios.create({
   withCredentials: true,
 });
 
-axiosSecure.interceptors.request.use((config) => {
-  const token = localStorage.getItem("sportnest_token");
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
 const useAxiosSecure = () => {
   return axiosSecure;
 };

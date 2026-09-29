@@ -1,4 +1,5 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
+import axios from "axios";
 import { authClient } from "../lib/auth-client";
 
 export const AuthContext = createContext(null);
@@ -13,7 +14,43 @@ const AuthProvider = ({ children }) => {
 
   const user = session?.user || null;
 
-  const createUser = async (name, email, password, photoURL) => {
+  const jwtCreatedForUser = useRef(null);
+
+  useEffect(() => {
+    const createJwtCookie = async () => {
+      if (!user?.email) return;
+
+      if (jwtCreatedForUser.current === user.email) {
+        return;
+      }
+
+      try {
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/jwt`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+
+        jwtCreatedForUser.current = user.email;
+      } catch (error) {
+        console.error(
+          "JWT cookie creation failed:",
+          error.response?.data?.message || error.message,
+        );
+      }
+    };
+
+    createJwtCookie();
+  }, [user?.email]);
+
+  const createUser = async (
+    name,
+    email,
+    password,
+    photoURL,
+  ) => {
     return await authClient.signUp.email({
       name,
       email,
@@ -36,7 +73,10 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  const updateUserProfile = async (name, photoURL) => {
+  const updateUserProfile = async (
+    name,
+    photoURL,
+  ) => {
     return await authClient.updateUser({
       name,
       image: photoURL,
@@ -44,6 +84,8 @@ const AuthProvider = ({ children }) => {
   };
 
   const logoutUser = async () => {
+    jwtCreatedForUser.current = null;
+
     return await authClient.signOut();
   };
 
@@ -53,7 +95,6 @@ const AuthProvider = ({ children }) => {
     loading: isPending,
     error,
     refetch,
-
     createUser,
     loginUser,
     googleLogin,
@@ -68,6 +109,7 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () =>
+  useContext(AuthContext);
 
 export default AuthProvider;

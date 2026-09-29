@@ -1,6 +1,9 @@
+import { useContext, useState } from "react";
 import { PlusCircle } from "lucide-react";
-import useAxiosSecure from "../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
+
+import useAxiosSecure from "../hooks/useAxiosSecure";
+import { AuthContext } from "../provider/AuthProvider";
 
 const fields = [
   {
@@ -42,7 +45,10 @@ const fields = [
 ];
 
 const AddFacility = () => {
+  const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
+
+  const [submitting, setSubmitting] = useState(false);
 
   const handleAddFacility = async (e) => {
     e.preventDefault();
@@ -79,6 +85,8 @@ const AddFacility = () => {
     }
 
     try {
+      setSubmitting(true);
+
       await axiosSecure.post("/facilities", facility);
 
       toast.success("Facility added successfully");
@@ -88,8 +96,10 @@ const AddFacility = () => {
       toast.error(
         error.response?.data?.message ||
           error.message ||
-          "Failed to add facility",
+          "Failed to add facility"
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -115,15 +125,32 @@ const AddFacility = () => {
         >
           <label>
             <span className="text-sm font-bold text-slate-300">
+              Owner Email
+            </span>
+
+            <input
+              type="email"
+              value={user?.email || ""}
+              readOnly
+              className="mt-2 w-full cursor-not-allowed rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-slate-400 outline-none"
+            />
+          </label>
+
+          <label>
+            <span className="text-sm font-bold text-slate-300">
               Facility Type
             </span>
 
             <select
               name="type"
               required
+              defaultValue=""
               className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 text-slate-300 outline-none transition focus:border-green-400/50"
             >
-              <option value="">Select facility type</option>
+              <option value="" disabled>
+                Select facility type
+              </option>
+
               <option value="Football">Football</option>
               <option value="Swimming">Swimming</option>
               <option value="Badminton">Badminton</option>
@@ -166,10 +193,14 @@ const AddFacility = () => {
 
           <button
             type="submit"
-            className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 md:col-span-2"
+            disabled={submitting}
+            className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
           >
             <PlusCircle size={20} />
-            Add Facility
+
+            {submitting
+              ? "Adding Facility..."
+              : "Add Facility"}
           </button>
         </form>
       </div>

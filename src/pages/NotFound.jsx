@@ -7,17 +7,24 @@ const NotFound = () => {
       <div className="absolute h-96 w-96 rounded-full bg-green-500/10 blur-[130px]" />
 
       <div className="relative text-center">
-        <h1 className="text-9xl font-black text-green-400">404</h1>
-        <h2 className="mt-4 text-4xl font-black uppercase">Arena Not Found</h2>
+        <h1 className="text-9xl font-black text-green-400">
+          404
+        </h1>
+
+        <h2 className="mt-4 text-4xl font-black uppercase">
+          Arena Not Found
+        </h2>
+
         <p className="mx-auto mt-4 max-w-md text-slate-400">
           The sports arena you are looking for does not exist or has been moved.
         </p>
 
         <Link
           to="/"
-          className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white"
+          className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400"
         >
-          <Home size={20} /> Back Home
+          <Home size={20} />
+          Back Home
         </Link>
       </div>
     </section>

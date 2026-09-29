@@ -1,73 +1,117 @@
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { Lock, Mail, X } from "lucide-react";
-import { FaChrome } from "react-icons/fa";
-import { useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../provider/AuthProvider";
+import { FaGoogle } from "react-icons/fa";
 import toast from "react-hot-toast";
 import axios from "axios";
 
+import { AuthContext } from "../provider/AuthProvider";
+
 const Login = () => {
-  const { loginUser, googleLogin } = useContext(AuthContext);
+  const { loginUser, googleLogin } =
+    useContext(AuthContext);
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [loggingIn, setLoggingIn] =
+    useState(false);
+  const [googleLoading, setGoogleLoading] =
+    useState(false);
 
   const from = location.state?.from || "/";
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const email = e.target.email.value.trim();
-    const password = e.target.password.value;
+    const form = e.target;
+
+    const email = form.email.value.trim();
+    const password = form.password.value;
 
     try {
-      const result = await loginUser(email, password);
+      setLoggingIn(true);
+
+      const result = await loginUser(
+        email,
+        password
+      );
 
       if (result?.error) {
-        toast.error(result.error.message || "Login failed");
+        toast.error(
+          result.error.message || "Login failed"
+        );
         return;
       }
 
+      // Better Auth session থেকে server JWT cookie তৈরি করবে
       await axios.post(
         `${import.meta.env.VITE_API_URL}/jwt`,
         {},
         {
           withCredentials: true,
-        },
+        }
       );
 
       toast.success("Login successful");
-      navigate(from, { replace: true });
+
+      navigate(from, {
+        replace: true,
+      });
     } catch (error) {
       toast.error(
-        error.response?.data?.message || error.message || "Login failed",
+        error.response?.data?.message ||
+          error.message ||
+          "Login failed"
       );
+    } finally {
+      setLoggingIn(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
+      setGoogleLoading(true);
+
       const result = await googleLogin();
 
       if (result?.error) {
-        toast.error(result.error.message || "Google login failed");
+        toast.error(
+          result.error.message ||
+            "Google login failed"
+        );
+
+        setGoogleLoading(false);
       }
+
+      // Google OAuth হলে এখান থেকে redirect হবে।
+      // callback-এর পর AuthProvider JWT cookie তৈরি করবে।
     } catch (error) {
-      toast.error(error.message || "Google login failed");
+      toast.error(
+        error.message || "Google login failed"
+      );
+
+      setGoogleLoading(false);
     }
   };
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#020806] px-4 pb-20 pt-28 text-white md:pt-36">
       {/* BACKGROUND GLOW */}
       <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-green-500/10 blur-[140px]" />
-      <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-sky-500/10 blur-[140px]" />
+
+      <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-sky-500/10 blur-[140px]" />
 
       <div className="relative mx-auto flex min-h-[90vh] max-w-6xl items-center justify-center">
         <div className="grid w-full overflow-hidden rounded-[40px] border border-white/10 bg-[#07110b]/95 shadow-[0_0_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl lg:grid-cols-[0.95fr_1.05fr]">
           {/* LEFT SIDE */}
           <div className="relative hidden overflow-hidden bg-[#0b1d13] lg:block">
             {/* MAP GRID */}
-            <div className="absolute inset-0 opacity-30 bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:42px_42px]" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:42px_42px] opacity-30" />
 
             {/* ROAD LINES */}
             <div className="absolute left-[10%] top-[20%] h-[2px] w-[70%] rotate-12 bg-white/10" />
@@ -79,7 +123,7 @@ const Login = () => {
             <div className="absolute left-1/2 top-1/2 z-20 flex h-40 w-40 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-8 border-white/20 bg-[#16281d] shadow-[0_0_40px_rgba(34,197,94,0.3)]">
               <img
                 src="https://i.pravatar.cc/300?img=12"
-                alt="player"
+                alt="SportNest player"
                 className="h-full w-full rounded-full object-cover"
               />
             </div>
@@ -106,14 +150,18 @@ const Login = () => {
                 text: "Book now?",
                 pos: "right-[12%] bottom-[22%]",
               },
-            ].map((item, i) => (
-              <div key={i} className={`absolute ${item.pos}`}>
+            ].map((item, index) => (
+              <div
+                key={index}
+                className={`absolute ${item.pos}`}
+              >
                 <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-xl">
                   <img
                     src={item.img}
                     alt=""
                     className="h-12 w-12 rounded-full border border-green-400/50 object-cover"
                   />
+
                   <p className="text-sm font-semibold text-white">
                     {item.text}
                   </p>
@@ -124,19 +172,20 @@ const Login = () => {
             {/* BRAND */}
             <div className="absolute bottom-10 left-10">
               <p className="text-sm uppercase tracking-[0.25em] text-green-400">
-                SportNest Community
+                SportNest
               </p>
 
               <h2 className="mt-3 max-w-sm text-5xl font-black uppercase leading-[1]">
-                Find Players.
-                <span className="block text-green-400">Book Arenas.</span>
+                Find Arenas.
+                <span className="block text-green-400">
+                  Book Your Game.
+                </span>
               </h2>
             </div>
           </div>
 
           {/* RIGHT SIDE */}
           <div className="relative bg-[#07110b] p-6 sm:p-10 lg:p-14">
-            {/* CLOSE */}
             <Link
               to="/"
               className="absolute right-6 top-6 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-400 transition hover:border-green-400/40 hover:text-white"
@@ -154,19 +203,25 @@ const Login = () => {
               </h1>
 
               <p className="mt-5 text-slate-400">
-                Access your bookings, explore sports venues and continue your
-                journey.
+                Access your bookings, explore sports
+                facilities and manage your reservations.
               </p>
 
-              {/* FORM */}
-              <form onSubmit={handleLogin} className="mt-10 space-y-5">
+              <form
+                onSubmit={handleLogin}
+                className="mt-10 space-y-5"
+              >
+                {/* EMAIL */}
                 <label className="block">
                   <span className="text-sm font-bold text-slate-300">
                     Email Address
                   </span>
 
-                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
-                    <Mail size={20} className="text-green-400" />
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-5 transition focus-within:border-green-400/50">
+                    <Mail
+                      size={20}
+                      className="text-green-400"
+                    />
 
                     <input
                       type="email"
@@ -178,13 +233,18 @@ const Login = () => {
                   </div>
                 </label>
 
+                {/* PASSWORD */}
                 <label className="block">
                   <span className="text-sm font-bold text-slate-300">
                     Password
                   </span>
 
-                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
-                    <Lock size={20} className="text-green-400" />
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-5 transition focus-within:border-green-400/50">
+                    <Lock
+                      size={20}
+                      className="text-green-400"
+                    />
+
                     <input
                       type="password"
                       name="password"
@@ -197,40 +257,51 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  className="w-full rounded-2xl bg-green-500 py-5 text-lg font-black text-white transition hover:bg-green-400"
+                  disabled={loggingIn}
+                  className="w-full rounded-2xl bg-green-500 py-5 text-lg font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Login
+                  {loggingIn
+                    ? "Logging in..."
+                    : "Login"}
                 </button>
               </form>
 
               {/* DIVIDER */}
               <div className="my-10 flex items-center gap-4">
                 <div className="h-px flex-1 bg-white/10" />
-                <span className="text-sm text-slate-500">OR CONTINUE WITH</span>
+
+                <span className="text-sm text-slate-500">
+                  OR CONTINUE WITH
+                </span>
+
                 <div className="h-px flex-1 bg-white/10" />
               </div>
 
-              {/* SOCIAL */}
-              <div>
-                <button
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10"
-                >
-                  <FaChrome size={20} />
-                  Continue with Google
-                </button>
-              </div>
+              {/* GOOGLE */}
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                disabled={googleLoading}
+                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-4 font-bold transition hover:border-green-400/40 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <FaGoogle size={20} />
 
-              {/* FOOTER */}
+                {googleLoading
+                  ? "Connecting..."
+                  : "Continue with Google"}
+              </button>
+
               <p className="mt-10 text-center text-sm text-slate-500">
-                By continuing, you agree to SportNest’s terms and privacy
-                policy.
+                Sign in securely to continue using
+                SportNest.
               </p>
 
               <p className="mt-4 text-center text-slate-400">
                 New here?{" "}
-                <Link to="/register" className="font-black text-green-400">
+                <Link
+                  to="/register"
+                  className="font-black text-green-400 hover:text-green-300"
+                >
                   Create account
                 </Link>
               </p>
