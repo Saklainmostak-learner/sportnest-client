@@ -1,5 +1,11 @@
-import { createContext, useContext, useEffect, useRef } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import axios from "axios";
+
 import { authClient } from "../lib/auth-client";
 
 export const AuthContext = createContext(null);
@@ -14,30 +20,52 @@ const AuthProvider = ({ children }) => {
 
   const user = session?.user || null;
 
-  const jwtCreatedForUser = useRef(null);
+  const jwtCreatedForUser =
+    useRef(null);
 
   useEffect(() => {
     const createJwtCookie = async () => {
       if (!user?.email) return;
 
-      if (jwtCreatedForUser.current === user.email) {
+      if (
+        jwtCreatedForUser.current ===
+        user.email
+      ) {
+        return;
+      }
+
+      const authToken =
+        localStorage.getItem(
+          "sportnest_auth_token",
+        );
+
+      if (!authToken) {
         return;
       }
 
       try {
         await axios.post(
-          `${import.meta.env.VITE_API_URL}/jwt`,
+          `${
+            import.meta.env.VITE_API_URL
+          }/jwt`,
           {},
           {
             withCredentials: true,
+
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
           },
         );
 
-        jwtCreatedForUser.current = user.email;
+        jwtCreatedForUser.current =
+          user.email;
       } catch (error) {
         console.error(
-          "JWT cookie creation failed:",
-          error.response?.data?.message || error.message,
+          "JWT creation failed:",
+          error.response?.data
+            ?.message ||
+            error.message,
         );
       }
     };
@@ -59,19 +87,30 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  const loginUser = async (email, password) => {
+  const loginUser = async (
+    email,
+    password,
+  ) => {
     return await authClient.signIn.email({
       email,
       password,
     });
   };
 
-  const googleLogin = async (destination = "/") => {
-    const safeDestination = destination.startsWith("/") ? destination : "/";
+  const googleLogin = async (
+    destination = "/",
+  ) => {
+    const safeDestination =
+      destination.startsWith("/")
+        ? destination
+        : "/";
 
     return await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${window.location.origin}${safeDestination}`,
+
+      callbackURL: `${
+        window.location.origin
+      }${safeDestination}`,
     });
   };
 
@@ -88,15 +127,24 @@ const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     jwtCreatedForUser.current = null;
 
-    return await authClient.signOut();
+    try {
+      return await authClient.signOut();
+    } finally {
+      localStorage.removeItem(
+        "sportnest_auth_token",
+      );
+    }
   };
 
   const authInfo = {
     user,
     session,
+
     loading: isPending,
+
     error,
     refetch,
+
     createUser,
     loginUser,
     googleLogin,
@@ -105,7 +153,9 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>
+    <AuthContext.Provider
+      value={authInfo}
+    >
       {children}
     </AuthContext.Provider>
   );
