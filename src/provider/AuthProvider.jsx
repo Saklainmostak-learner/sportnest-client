@@ -1,14 +1,12 @@
 import {
   createContext,
   useContext,
-  useEffect,
-  useRef,
 } from "react";
-import axios from "axios";
 
 import { authClient } from "../lib/auth-client";
 
-export const AuthContext = createContext(null);
+export const AuthContext =
+  createContext(null);
 
 const AuthProvider = ({ children }) => {
   const {
@@ -19,59 +17,6 @@ const AuthProvider = ({ children }) => {
   } = authClient.useSession();
 
   const user = session?.user || null;
-
-  const jwtCreatedForUser =
-    useRef(null);
-
-  useEffect(() => {
-    const createJwtCookie = async () => {
-      if (!user?.email) return;
-
-      if (
-        jwtCreatedForUser.current ===
-        user.email
-      ) {
-        return;
-      }
-
-      const authToken =
-        localStorage.getItem(
-          "sportnest_auth_token",
-        );
-
-      if (!authToken) {
-        return;
-      }
-
-      try {
-        await axios.post(
-          `${
-            import.meta.env.VITE_API_URL
-          }/jwt`,
-          {},
-          {
-            withCredentials: true,
-
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          },
-        );
-
-        jwtCreatedForUser.current =
-          user.email;
-      } catch (error) {
-        console.error(
-          "JWT creation failed:",
-          error.response?.data
-            ?.message ||
-            error.message,
-        );
-      }
-    };
-
-    createJwtCookie();
-  }, [user?.email]);
 
   const createUser = async (
     name,
@@ -91,10 +36,32 @@ const AuthProvider = ({ children }) => {
     email,
     password,
   ) => {
-    return await authClient.signIn.email({
-      email,
-      password,
-    });
+    const result =
+      await authClient.signIn.email(
+        {
+          email,
+          password,
+        },
+        {
+          onSuccess: (ctx) => {
+            const token =
+              ctx.response.headers.get(
+                "set-auth-token",
+              );
+
+            if (token) {
+              localStorage.setItem(
+                "sportnest_auth_token",
+                token,
+              );
+            }
+          },
+        },
+      );
+
+    await refetch();
+
+    return result;
   };
 
   const googleLogin = async (
@@ -125,8 +92,6 @@ const AuthProvider = ({ children }) => {
   };
 
   const logoutUser = async () => {
-    jwtCreatedForUser.current = null;
-
     try {
       return await authClient.signOut();
     } finally {
@@ -139,12 +104,9 @@ const AuthProvider = ({ children }) => {
   const authInfo = {
     user,
     session,
-
     loading: isPending,
-
     error,
     refetch,
-
     createUser,
     loginUser,
     googleLogin,

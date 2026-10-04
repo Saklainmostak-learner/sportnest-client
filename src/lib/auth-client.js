@@ -8,30 +8,27 @@ export const authClient = createAuthClient({
   baseURL: API_URL,
 
   fetchOptions: {
+    onSuccess: (ctx) => {
+      const token =
+        ctx.response.headers.get(
+          "set-auth-token"
+        );
+
+      if (token) {
+        localStorage.setItem(
+          "sportnest_auth_token",
+          token
+        );
+      }
+    },
+
     auth: {
       type: "Bearer",
 
-      token: () => {
-        return (
-          localStorage.getItem(
-            "sportnest_auth_token",
-          ) || ""
-        );
-      },
-    },
-
-    onSuccess: (context) => {
-      const authToken =
-        context.response.headers.get(
-          "set-auth-token",
-        );
-
-      if (authToken) {
-        localStorage.setItem(
-          "sportnest_auth_token",
-          authToken,
-        );
-      }
+      token: () =>
+        localStorage.getItem(
+          "sportnest_auth_token"
+        ) || "",
     },
   },
 });
