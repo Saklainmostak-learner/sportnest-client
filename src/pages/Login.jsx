@@ -37,12 +37,17 @@ const Login = () => {
         return;
       }
 
-      // Better Auth session থেকে server JWT cookie তৈরি করবে
+      // Better Auth session server JWT cookie
+      const authToken = localStorage.getItem("sportnest_auth_token");
+
       await axios.post(
         `${import.meta.env.VITE_API_URL}/jwt`,
         {},
         {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
         },
       );
 
@@ -72,8 +77,8 @@ const Login = () => {
         setGoogleLoading(false);
       }
 
-      // Google OAuth হলে এখান থেকে redirect হবে।
-      // callback-এর পর AuthProvider JWT cookie তৈরি করবে।
+      // Google OAuth redirect 
+      // callback- AuthProvider JWT cookie 
     } catch (error) {
       toast.error(error.message || "Google login failed");
 
@@ -246,7 +251,9 @@ const Login = () => {
               <div className="my-6 flex items-center gap-4">
                 <div className="h-px flex-1 bg-[var(--border)]" />
 
-                <span className="text-xs text-[var(--muted)]">OR CONTINUE WITH</span>
+                <span className="text-xs text-[var(--muted)]">
+                  OR CONTINUE WITH
+                </span>
 
                 <div className="h-px flex-1 bg-[var(--border)]" />
               </div>
@@ -256,7 +263,7 @@ const Login = () => {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={googleLoading}
-               className="flex w-full items-center justify-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] py-3 font-bold text-[var(--text)] transition hover:border-green-400/40 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] py-3 font-bold text-[var(--text)] transition hover:border-green-400/40 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <FaGoogle size={20} />
 
@@ -267,7 +274,7 @@ const Login = () => {
                 Sign in securely to continue using SportNest.
               </p>
 
-             <p className="mt-3 text-center text-sm text-[var(--muted)]">
+              <p className="mt-3 text-center text-sm text-[var(--muted)]">
                 New here?{" "}
                 <Link
                   to="/register"
