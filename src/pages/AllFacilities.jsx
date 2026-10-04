@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { MapPin, Search, RotateCcw } from "lucide-react";
+import { MapPin, RotateCcw, Search } from "lucide-react";
 
 import FacilityCard from "../components/FacilityCard";
 import EmptyState from "../components/EmptyState";
@@ -53,7 +53,7 @@ const AllFacilities = () => {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/facilities${
             queryString ? `?${queryString}` : ""
-          }`
+          }`,
         );
 
         if (!response.ok) {
@@ -64,7 +64,6 @@ const AllFacilities = () => {
 
         setFacilities(normalizeFacilities(data));
 
-        // URL sync
         setSearchParams(params, {
           replace: true,
         });
@@ -72,7 +71,9 @@ const AllFacilities = () => {
         console.error(error);
 
         setFacilities([]);
-        setErrorMessage("Facilities could not be loaded from the server.");
+        setErrorMessage(
+          "Facilities could not be loaded from the server.",
+        );
       } finally {
         setLoading(false);
       }
@@ -89,47 +90,46 @@ const AllFacilities = () => {
   };
 
   return (
-    <section className="min-h-screen bg-[#020806] pt-36 text-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--bg)] px-4 pb-12 pt-24 text-[var(--text)] sm:px-6 md:pt-28 lg:px-8">
+      <div className="mx-auto max-w-6xl">
         <BackButton fallback="/" label="Back Home" />
+
         {/* HEADER */}
-        <div className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/[0.04] p-8 backdrop-blur-2xl md:p-12">
-          <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-green-500/10 blur-[100px]" />
+        <div className="relative mt-4 overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_16px_45px_rgba(0,0,0,0.12)] backdrop-blur-2xl md:p-6">
+          <div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-green-500/10 blur-[90px]" />
 
           <div className="relative">
-            <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
+            <p className="mb-3 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-green-400">
               All Facilities
             </p>
 
-            <h1 className="text-4xl font-black uppercase md:text-6xl">
+            <h1 className="text-3xl font-black uppercase leading-tight md:text-4xl">
               Find Your Perfect Arena
             </h1>
 
-            <p className="mt-4 max-w-2xl text-slate-400">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)] md:text-base">
               Search and filter sports facilities to find the right venue for
               your next game.
             </p>
 
             {/* SEARCH + FILTER */}
-            <div className="mt-8 grid gap-4 md:grid-cols-[1fr_230px_auto]">
-              {/* SEARCH */}
-              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 transition focus-within:border-green-400/50">
-                <Search className="text-green-400" />
+            <div className="mt-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_210px_auto]">
+              <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 transition focus-within:border-green-400/50">
+                <Search size={18} className="shrink-0 text-green-400" />
 
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search facility name..."
-                  className="w-full bg-transparent outline-none placeholder:text-slate-500"
+                  className="w-full min-w-0 bg-transparent text-[var(--text)] outline-none placeholder:text-[var(--muted)]"
                 />
               </div>
 
-              {/* SPORT FILTER */}
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-[#07110b] px-5 py-4 text-slate-300 outline-none transition focus:border-green-400/50"
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-green-400/50"
               >
                 <option value="">All Sports</option>
                 <option value="Football">Football</option>
@@ -140,23 +140,19 @@ const AllFacilities = () => {
                 <option value="Gym">Gym</option>
               </select>
 
-              {/* RESET */}
               <button
                 type="button"
                 onClick={handleReset}
                 disabled={!search && !type}
-                className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-7 py-4 font-black text-white transition hover:border-green-400/40 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 font-black text-[var(--text)] transition hover:border-green-400/40 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <RotateCcw size={18} />
+                <RotateCcw size={17} />
                 Reset
               </button>
             </div>
 
-            <div className="mt-6 flex items-center gap-2 text-sm text-slate-400">
-              <MapPin
-                size={16}
-                className="text-green-400"
-              />
+            <div className="mt-4 flex items-center gap-2 text-sm text-[var(--muted)]">
+              <MapPin size={16} className="text-green-400" />
 
               {loading
                 ? "Searching facilities..."
@@ -168,7 +164,7 @@ const AllFacilities = () => {
         </div>
 
         {/* FACILITY RESULTS */}
-        <div className="py-16">
+        <div className="py-8 md:py-10">
           {loading ? (
             <Loading />
           ) : errorMessage ? (
@@ -177,7 +173,7 @@ const AllFacilities = () => {
               message={errorMessage}
             />
           ) : facilities.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {facilities.map((facility) => (
                 <FacilityCard
                   key={facility._id}

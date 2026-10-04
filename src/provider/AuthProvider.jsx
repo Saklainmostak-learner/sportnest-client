@@ -66,10 +66,12 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  const googleLogin = async () => {
+  const googleLogin = async (destination = "/") => {
+    const safeDestination = destination.startsWith("/") ? destination : "/";
+
     return await authClient.signIn.social({
       provider: "google",
-      callbackURL: window.location.origin,
+      callbackURL: `${window.location.origin}${safeDestination}`,
     });
   };
 

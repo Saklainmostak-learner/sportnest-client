@@ -21,6 +21,7 @@ const FacilityDetails = () => {
   const [facility, setFacility] = useState(null);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
+
   const [hours, setHours] = useState(1);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [bookingTime, setBookingTime] = useState("");
@@ -29,7 +30,9 @@ const FacilityDetails = () => {
     const loadFacility = async () => {
       try {
         setLoading(true);
+
         const response = await axiosSecure.get(`/facilities/${id}`);
+
         setFacility(normalizeFacility(response.data));
       } catch (error) {
         toast.error(
@@ -49,6 +52,7 @@ const FacilityDetails = () => {
     e.preventDefault();
 
     const form = e.target;
+
     const bookingData = {
       facilityId: facility._id,
       bookingDate: form.bookingDate.value,
@@ -79,8 +83,11 @@ const FacilityDetails = () => {
 
     try {
       setBooking(true);
+
       await axiosSecure.post("/bookings", bookingData);
+
       toast.success("Booking confirmed successfully");
+
       form.reset();
       setHours(1);
       setSelectedSlot("");
@@ -96,62 +103,89 @@ const FacilityDetails = () => {
     }
   };
 
-  if (loading) return <Loading />;
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!facility) {
     return (
-      <section className="min-h-screen bg-[#020806] px-4 pt-36 text-white">
-        <div className="mx-auto max-w-7xl">
-          <BackButton fallback="/all-facilities" />
-          <p className="text-center text-slate-400">No facility found.</p>
+      <section className="min-h-screen bg-[var(--bg)] px-4 pt-24 text-[var(--text)] md:pt-28">
+        <div className="mx-auto max-w-6xl">
+          <BackButton fallback="/all-facilities" label="Back to Facilities" />
+
+          <div className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
+            <p className="text-[var(--muted)]">
+              No facility found.
+            </p>
+          </div>
         </div>
       </section>
     );
   }
 
   const today = new Date().toISOString().split("T")[0];
+
   const availableSlots = facility.availableSlots || [];
-  const totalPrice = Number(facility.pricePerHour || 0) * Number(hours || 0);
+
+  const totalPrice =
+    Number(facility.pricePerHour || 0) *
+    Number(hours || 0);
+
   const hasPrice = Number(facility.pricePerHour) > 0;
 
   return (
-    <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <BackButton fallback="/all-facilities" label="Back to Facilities" />
+    <section className="min-h-screen bg-[var(--bg)] px-4 pb-12 pt-24 text-[var(--text)] sm:px-6 md:pt-28 lg:px-8">
+      <div className="mx-auto max-w-6xl">
+        <BackButton
+          fallback="/all-facilities"
+          label="Back to Facilities"
+        />
 
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
+        <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+          {/* LEFT SIDE */}
+          <div className="min-w-0">
             <img
               src={facility.image}
               alt={facility.name}
-              className="h-[320px] w-full rounded-[36px] object-cover sm:h-[380px] md:h-[460px]"
+              className="h-[220px] w-full rounded-2xl object-cover sm:h-[280px] md:h-[330px] lg:h-[360px]"
             />
 
-            <div className="mt-8">
-              <p className="mb-3 inline-flex rounded-full bg-green-500/15 px-4 py-2 text-xs font-black uppercase text-green-400">
+            <div className="mt-5">
+              <p className="mb-2 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-green-400">
                 {facility.type}
               </p>
 
-              <h1 className="text-4xl font-black uppercase md:text-6xl">
+              <h1 className="text-3xl font-black uppercase leading-tight md:text-4xl">
                 {facility.name}
               </h1>
 
-              <p className="mt-5 max-w-3xl leading-8 text-slate-400">
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)] md:text-base">
                 {facility.description}
               </p>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Info icon={MapPin} label="Location" value={facility.location} />
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <Info
+                  icon={MapPin}
+                  label="Location"
+                  value={facility.location}
+                />
+
                 <Info
                   icon={Users}
                   label="Capacity"
                   value={`${facility.capacity || 0} Players`}
                 />
+
                 <Info
                   icon={Clock}
                   label="Price"
-                  value={hasPrice ? `৳${facility.pricePerHour}/hr` : "Not set"}
+                  value={
+                    hasPrice
+                      ? `৳${facility.pricePerHour}/hr`
+                      : "Not set"
+                  }
                 />
+
                 <Info
                   icon={ShieldCheck}
                   label="Slots"
@@ -161,20 +195,35 @@ const FacilityDetails = () => {
             </div>
           </div>
 
-          <div className="h-fit rounded-[36px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-2xl md:p-8 lg:sticky lg:top-28">
-            <h2 className="text-3xl font-black">Book This Facility</h2>
-            <p className="mt-2 text-sm text-slate-400">
-              Choose a date, an available slot, your preferred start time and duration.
-            </p>
+          {/* BOOKING CARD */}
+          <div className="h-fit rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-2xl lg:sticky lg:top-24">
+            <div className="mb-5">
+              <h2 className="text-2xl font-black">
+                Book This Facility
+              </h2>
+
+              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                Choose your date, slot, preferred start time and
+                booking duration.
+              </p>
+            </div>
 
             {!hasPrice && (
-              <div className="mt-5 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-300">
-                This older facility does not have a valid hourly price yet. Update the facility before accepting bookings.
+              <div className="mb-4 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm leading-5 text-amber-300">
+                This facility does not have a valid hourly price yet.
+                Update the facility before accepting bookings.
               </div>
             )}
 
-            <form onSubmit={handleBooking} className="mt-7 space-y-5">
-              <Input label="Facility Name" value={facility.name} readOnly />
+            <form
+              onSubmit={handleBooking}
+              className="space-y-3"
+            >
+              <Input
+                label="Facility Name"
+                value={facility.name}
+                readOnly
+              />
 
               <Input
                 label="Booking Date"
@@ -184,44 +233,63 @@ const FacilityDetails = () => {
               />
 
               <label className="block">
-                <span className="text-sm font-bold text-slate-300">Available Time Slot</span>
+                <span className="text-sm font-bold text-[var(--text)]">
+                  Available Time Slot
+                </span>
+
                 <select
                   name="timeSlot"
                   required
                   value={selectedSlot}
-                  onChange={(e) => setSelectedSlot(e.target.value)}
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 text-slate-300 outline-none transition focus:border-green-400/50"
+                  onChange={(e) =>
+                    setSelectedSlot(e.target.value)
+                  }
+                  className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-green-400/50"
                 >
                   <option value="" disabled>
                     Select a time slot
                   </option>
+
                   {availableSlots.map((slot, index) => (
-                    <option key={`${slot}-${index}`} value={slot}>
+                    <option
+                      key={`${slot}-${index}`}
+                      value={slot}
+                    >
                       {slot}
                     </option>
                   ))}
                 </select>
+
                 {availableSlots.length === 0 && (
-                  <p className="mt-2 text-xs text-red-400">
-                    No time slots are available. The facility owner needs to add slots first.
+                  <p className="mt-2 text-xs leading-5 text-red-400">
+                    No time slots are available. The facility owner
+                    needs to add slots first.
                   </p>
                 )}
               </label>
 
               <label className="block">
-                <span className="text-sm font-bold text-slate-300">Preferred Start Time</span>
+                <span className="text-sm font-bold text-[var(--text)]">
+                  Preferred Start Time
+                </span>
+
                 <input
                   type="time"
                   name="bookingTime"
                   required
                   value={bookingTime}
-                  onChange={(e) => setBookingTime(e.target.value)}
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50"
+                  onChange={(e) =>
+                    setBookingTime(e.target.value)
+                  }
+                  className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-green-400/50"
                 />
               </label>
 
               <label className="block">
-                <span className="text-sm font-bold text-slate-300">Hours</span>
+                <span className="text-sm font-bold text-[var(--text)]">
+                  Hours
+                </span>
+
                 <input
                   name="hours"
                   type="number"
@@ -229,35 +297,66 @@ const FacilityDetails = () => {
                   required
                   value={hours}
                   onChange={(e) =>
-                    setHours(Math.max(1, Number(e.target.value) || 1))
+                    setHours(
+                      Math.max(
+                        1,
+                        Number(e.target.value) || 1,
+                      ),
+                    )
                   }
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50"
+                  className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-green-400/50"
                 />
               </label>
 
               <Input
                 label="Price Per Hour"
-                value={hasPrice ? `৳${facility.pricePerHour}` : "Not set"}
+                value={
+                  hasPrice
+                    ? `৳${facility.pricePerHour}`
+                    : "Not set"
+                }
                 readOnly
               />
 
-              <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-5">
-                <p className="text-sm text-slate-300">Total Booking Price</p>
-                <h3 className="mt-2 text-4xl font-black text-green-400">
-                  ৳{hasPrice ? totalPrice : 0}
-                </h3>
-                <p className="mt-2 text-xs text-slate-400">
-                  The server verifies the final price before saving the booking.
+              <div className="rounded-xl border border-green-500/20 bg-green-500/10 p-4">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+                      Total Booking Price
+                    </p>
+
+                    <h3 className="mt-1 text-3xl font-black text-green-400">
+                      ৳{hasPrice ? totalPrice : 0}
+                    </h3>
+                  </div>
+
+                  {hasPrice && (
+                    <p className="text-right text-xs text-[var(--muted)]">
+                      {hours} hour{hours > 1 ? "s" : ""}
+                    </p>
+                  )}
+                </div>
+
+                <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                  Final price is verified by the server before the
+                  booking is saved.
                 </p>
               </div>
 
               <button
                 type="submit"
-                disabled={booking || availableSlots.length === 0 || !hasPrice}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-green-500 py-4 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={
+                  booking ||
+                  availableSlots.length === 0 ||
+                  !hasPrice
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 py-3.5 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <Calendar size={20} />
-                {booking ? "Booking..." : "Confirm Booking"}
+                <Calendar size={18} />
+
+                {booking
+                  ? "Booking..."
+                  : "Confirm Booking"}
               </button>
             </form>
           </div>
@@ -267,11 +366,24 @@ const FacilityDetails = () => {
   );
 };
 
-const Info = ({ icon: Icon, label, value }) => (
-  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-    <Icon className="mb-3 text-green-400" />
-    <p className="text-sm text-slate-400">{label}</p>
-    <h4 className="font-black">{value}</h4>
+const Info = ({
+  icon: Icon,
+  label,
+  value,
+}) => (
+  <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3.5">
+    <Icon
+      size={19}
+      className="mb-2 text-green-400"
+    />
+
+    <p className="text-xs text-[var(--muted)]">
+      {label}
+    </p>
+
+    <h4 className="mt-0.5 break-words text-sm font-black text-[var(--text)]">
+      {value}
+    </h4>
   </div>
 );
 
@@ -285,7 +397,10 @@ const Input = ({
   min,
 }) => (
   <label className="block">
-    <span className="text-sm font-bold text-slate-300">{label}</span>
+    <span className="text-sm font-bold text-[var(--text)]">
+      {label}
+    </span>
+
     <input
       name={name}
       type={type}
@@ -294,10 +409,10 @@ const Input = ({
       readOnly={readOnly}
       required={!readOnly}
       min={min}
-      className={`mt-2 w-full rounded-2xl border border-white/10 px-4 py-4 outline-none transition ${
+      className={`mt-2 w-full rounded-xl border border-[var(--border)] px-4 py-3 outline-none transition ${
         readOnly
-          ? "bg-white/[0.03] text-slate-400"
-          : "bg-white/5 focus:border-green-400/50"
+          ? "cursor-default bg-[var(--surface-soft)] text-[var(--muted)]"
+          : "bg-[var(--surface-soft)] text-[var(--text)] focus:border-green-400/50"
       }`}
     />
   </label>

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { Save } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import Loading from "../components/Loading";
+import BackButton from "../components/BackButton";
+import { normalizeFacility } from "../utils/facility";
 
 const UpdateFacility = () => {
   const { id } = useParams();
@@ -21,7 +24,7 @@ const UpdateFacility = () => {
 
         const response = await axiosSecure.get(`/facilities/${id}`);
 
-        setFacility(response.data);
+        setFacility(normalizeFacility(response.data));
       } catch (error) {
         toast.error(
           error.response?.data?.message ||
@@ -98,34 +101,48 @@ const UpdateFacility = () => {
 
   if (!facility) {
     return (
-      <section className="min-h-screen bg-[#020806] px-4 pt-36 text-white">
-        <div className="mx-auto max-w-4xl">
-          <p className="text-center text-slate-400">
-            Facility not found.
-          </p>
+      <section className="min-h-screen bg-[var(--bg)] px-4 pt-24 text-[var(--text)] md:pt-28">
+        <div className="mx-auto max-w-5xl">
+          <BackButton
+            fallback="/manage-facilities"
+            label="Back to Manage Facilities"
+          />
+
+          <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
+            <p className="text-[var(--muted)]">
+              Facility not found.
+            </p>
+          </div>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white">
-      <div className="mx-auto max-w-4xl rounded-[36px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:p-8">
-        <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-          Owner Control
-        </p>
+    <section className="min-h-screen bg-[var(--bg)] px-4 pb-12 pt-24 text-[var(--text)] sm:px-6 md:pt-28 lg:px-8">
+      <div className="mx-auto max-w-5xl">
+        <BackButton
+          fallback="/manage-facilities"
+          label="Back to Manage Facilities"
+        />
 
-        <h1 className="text-4xl font-black">
-          Update Facility
-        </h1>
+        <div className="mt-4">
+          <p className="mb-3 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-green-400">
+            Owner Control
+          </p>
 
-        <p className="mt-3 text-slate-400">
-          Update your facility information, pricing and available time slots.
-        </p>
+          <h1 className="text-3xl font-black uppercase leading-tight md:text-4xl">
+            Update Facility
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)] md:text-base">
+            Update your facility information, pricing and available time slots.
+          </p>
+        </div>
 
         <form
           onSubmit={handleUpdate}
-          className="mt-8 grid gap-5 md:grid-cols-2"
+          className="mt-6 grid gap-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl md:grid-cols-2 md:p-6"
         >
           <Input
             label="Facility Name"
@@ -170,10 +187,11 @@ const UpdateFacility = () => {
                 ? facility.availableSlots.join(", ")
                 : ""
             }
+            placeholder="6 PM - 8 PM, 8 PM - 10 PM"
           />
 
-          <label>
-            <span className="text-sm font-bold text-slate-300">
+          <label className="block">
+            <span className="text-sm font-bold text-[var(--text)]">
               Facility Type
             </span>
 
@@ -181,7 +199,7 @@ const UpdateFacility = () => {
               name="type"
               required
               defaultValue={facility.type}
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 text-slate-300 outline-none transition focus:border-green-400/50"
+              className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-green-400/50"
             >
               <option value="Football">Football</option>
               <option value="Swimming">Swimming</option>
@@ -192,25 +210,29 @@ const UpdateFacility = () => {
             </select>
           </label>
 
-          <label className="md:col-span-2">
-            <span className="text-sm font-bold text-slate-300">
+          <div className="hidden md:block" />
+
+          <label className="block md:col-span-2">
+            <span className="text-sm font-bold text-[var(--text)]">
               Description
             </span>
 
             <textarea
               name="description"
-              rows="5"
+              rows="4"
               required
               defaultValue={facility.description}
-              className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
+              className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition placeholder:text-[var(--muted)] focus:border-green-400/50"
             />
           </label>
 
           <button
             type="submit"
             disabled={updating}
-            className="rounded-2xl bg-green-500 py-4 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
+            className="flex items-center justify-center gap-2 rounded-xl bg-green-500 px-6 py-3.5 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
           >
+            <Save size={19} />
+
             {updating
               ? "Updating..."
               : "Update Facility"}
@@ -227,9 +249,10 @@ const Input = ({
   defaultValue,
   type = "text",
   min,
+  placeholder,
 }) => (
-  <label>
-    <span className="text-sm font-bold text-slate-300">
+  <label className="block">
+    <span className="text-sm font-bold text-[var(--text)]">
       {label}
     </span>
 
@@ -239,7 +262,8 @@ const Input = ({
       min={min}
       defaultValue={defaultValue}
       required
-      className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
+      placeholder={placeholder}
+      className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition placeholder:text-[var(--muted)] focus:border-green-400/50"
     />
   </label>
 );

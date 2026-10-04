@@ -1,85 +1,105 @@
 import {
+  ArrowRight,
+  Clock,
   MapPin,
   Users,
-  Clock,
-  ArrowRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { normalizeFacility } from "../utils/facility";
 
 const FacilityCard = ({ facility: rawFacility }) => {
   const facility = normalizeFacility(rawFacility);
+
   const id = facility._id || facility.id;
   const availableSlots = facility.availableSlots || [];
   const hasPrice = Number(facility.pricePerHour) > 0;
 
   return (
-    <div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-2xl backdrop-blur-xl transition duration-300 hover:border-green-400/35 hover:shadow-[0_18px_45px_rgba(34,197,94,0.10)]">
-      <div className="relative h-56 overflow-hidden">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[0_14px_40px_rgba(0,0,0,0.12)] transition duration-300 hover:border-green-400/30 hover:shadow-[0_16px_42px_rgba(34,197,94,0.08)]">
+      <div className="relative h-44 overflow-hidden sm:h-48">
         <img
           src={facility.image}
           alt={facility.name}
-          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#020806] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
 
-        <div className="absolute left-4 top-4 rounded-full bg-green-500 px-4 py-1.5 text-xs font-black uppercase text-white">
+        <div className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/45 px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-white backdrop-blur-md">
           {facility.type}
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4">
         <div className="flex-1">
-          <h3 className="text-xl font-black text-white">{facility.name}</h3>
+          <h3 className="truncate text-lg font-black text-[var(--text)]">
+            {facility.name}
+          </h3>
 
-          <p className="mt-2 flex items-center gap-2 text-sm text-slate-400">
-            <MapPin size={16} />
-            {facility.location}
+          <p className="mt-2 flex min-w-0 items-center gap-2 text-sm text-[var(--muted)]">
+            <MapPin
+              size={15}
+              className="shrink-0 text-green-400"
+            />
+
+            <span className="truncate">
+              {facility.location}
+            </span>
           </p>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-2xl bg-white/5 p-3">
-              <p className="flex items-center gap-2 text-slate-400">
-                <Users size={16} /> Capacity
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              <p className="flex items-center gap-2 text-xs text-[var(--muted)]">
+                <Users size={15} className="text-green-400" />
+                Capacity
               </p>
-              <h4 className="mt-1 font-bold text-white">
+
+              <p className="mt-1 text-sm font-bold text-[var(--text)]">
                 {facility.capacity || 0} Players
-              </h4>
+              </p>
             </div>
 
-            <div className="rounded-2xl bg-white/5 p-3">
-              <p className="flex items-center gap-2 text-slate-400">
-                <Clock size={16} /> Slots
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              <p className="flex items-center gap-2 text-xs text-[var(--muted)]">
+                <Clock size={15} className="text-green-400" />
+                Slots
               </p>
-              <h4 className="mt-1 font-bold text-white">
+
+              <p className="mt-1 text-sm font-bold text-[var(--text)]">
                 {availableSlots.length} Available
-              </h4>
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs text-slate-400">Price per hour</p>
-            <h4 className="text-2xl font-black text-green-400">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--border)] pt-4">
+          <div className="min-w-0">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted)]">
+              Price per hour
+            </p>
+
+            <p className="mt-0.5 text-xl font-black text-green-400">
               {hasPrice ? `৳${facility.pricePerHour}` : "Not set"}
+
               {hasPrice && (
-                <span className="text-sm text-slate-400"> /hr</span>
+                <span className="text-xs font-semibold text-[var(--muted)]">
+                  {" "}
+                  /hr
+                </span>
               )}
-            </h4>
+            </p>
           </div>
 
           <Link
             to={`/facility/${id}`}
-            className="flex items-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition hover:bg-green-400"
+            className="flex shrink-0 items-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-green-400"
           >
             Book Now
-            <ArrowRight size={17} />
+            <ArrowRight size={16} />
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

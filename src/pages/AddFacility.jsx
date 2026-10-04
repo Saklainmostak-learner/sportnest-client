@@ -29,13 +29,13 @@ const fields = [
     label: "Price Per Hour",
     name: "pricePerHour",
     type: "number",
-    placeholder: "৳",
+    placeholder: "Enter hourly price",
   },
   {
     label: "Capacity",
     name: "capacity",
     type: "number",
-    placeholder: "Number of Players",
+    placeholder: "Number of players",
   },
   {
     label: "Available Time Slots",
@@ -97,7 +97,7 @@ const AddFacility = () => {
       toast.error(
         error.response?.data?.message ||
           error.message ||
-          "Failed to add facility"
+          "Failed to add facility",
       );
     } finally {
       setSubmitting(false);
@@ -105,28 +105,31 @@ const AddFacility = () => {
   };
 
   return (
-    <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--bg)] px-4 pb-12 pt-24 text-[var(--text)] sm:px-6 md:pt-28 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <BackButton fallback="/" />
-        <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-          Owner Dashboard
-        </p>
 
-        <h1 className="text-4xl font-black uppercase md:text-6xl">
-          Add New Facility
-        </h1>
+        <div className="mt-4">
+          <p className="mb-3 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-green-400">
+            Owner Dashboard
+          </p>
 
-        <p className="mt-4 max-w-2xl text-slate-400">
-          Add your sports venue with pricing, capacity, available slots and
-          booking details.
-        </p>
+          <h1 className="text-3xl font-black uppercase leading-tight md:text-4xl">
+            Add New Facility
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)] md:text-base">
+            Add your sports venue with pricing, capacity, available slots and
+            booking details.
+          </p>
+        </div>
 
         <form
           onSubmit={handleAddFacility}
-          className="mt-10 grid gap-5 rounded-[36px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-2xl md:grid-cols-2 md:p-8"
+          className="mt-6 grid gap-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl md:grid-cols-2 md:p-6"
         >
-          <label>
-            <span className="text-sm font-bold text-slate-300">
+          <label className="block">
+            <span className="text-sm font-bold text-[var(--text)]">
               Owner Email
             </span>
 
@@ -134,12 +137,12 @@ const AddFacility = () => {
               type="email"
               value={user?.email || ""}
               readOnly
-              className="mt-2 w-full cursor-not-allowed rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-slate-400 outline-none"
+              className="mt-2 w-full cursor-not-allowed rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--muted)] outline-none"
             />
           </label>
 
-          <label>
-            <span className="text-sm font-bold text-slate-300">
+          <label className="block">
+            <span className="text-sm font-bold text-[var(--text)]">
               Facility Type
             </span>
 
@@ -147,7 +150,7 @@ const AddFacility = () => {
               name="type"
               required
               defaultValue=""
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 text-slate-300 outline-none transition focus:border-green-400/50"
+              className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-green-400/50"
             >
               <option value="" disabled>
                 Select facility type
@@ -163,8 +166,8 @@ const AddFacility = () => {
           </label>
 
           {fields.map((field) => (
-            <label key={field.name}>
-              <span className="text-sm font-bold text-slate-300">
+            <label key={field.name} className="block">
+              <span className="text-sm font-bold text-[var(--text)]">
                 {field.label}
               </span>
 
@@ -174,31 +177,31 @@ const AddFacility = () => {
                 required
                 min={field.type === "number" ? 1 : undefined}
                 placeholder={field.placeholder}
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
+                className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition placeholder:text-[var(--muted)] focus:border-green-400/50"
               />
             </label>
           ))}
 
-          <label className="md:col-span-2">
-            <span className="text-sm font-bold text-slate-300">
+          <label className="block md:col-span-2">
+            <span className="text-sm font-bold text-[var(--text)]">
               Description
             </span>
 
             <textarea
               name="description"
               required
-              rows="5"
+              rows="4"
               placeholder="Write facility description..."
-              className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
+              className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text)] outline-none transition placeholder:text-[var(--muted)] focus:border-green-400/50"
             />
           </label>
 
           <button
             type="submit"
             disabled={submitting}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-7 py-4 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
+            className="flex items-center justify-center gap-2 rounded-xl bg-green-500 px-6 py-3.5 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
           >
-            <PlusCircle size={20} />
+            <PlusCircle size={19} />
 
             {submitting
               ? "Adding Facility..."

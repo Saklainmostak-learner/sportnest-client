@@ -1,225 +1,318 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  Image,
+  Lock,
+  Mail,
+  User,
+} from "lucide-react";
+import { FaGoogle } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-import useAxiosSecure from "../hooks/useAxiosSecure";
-import Loading from "../components/Loading";
-import BackButton from "../components/BackButton";
-import { normalizeFacility } from "../utils/facility";
+import { AuthContext } from "../provider/AuthProvider";
 
-const UpdateFacility = () => {
-  const { id } = useParams();
+const Register = () => {
+  const { createUser, googleLogin } = useContext(AuthContext);
   const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure();
 
-  const [facility, setFacility] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [registering, setRegistering] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  useEffect(() => {
-    const loadFacility = async () => {
-      try {
-        setLoading(true);
-
-        const response = await axiosSecure.get(`/facilities/${id}`);
-
-        setFacility(normalizeFacility(response.data));
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message ||
-            error.message ||
-            "Failed to load facility",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFacility();
-  }, [id, axiosSecure]);
-
-  const handleUpdate = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     const form = e.target;
 
-    const updatedFacility = {
-      name: form.name.value.trim(),
-      type: form.type.value,
-      image: form.image.value.trim(),
-      location: form.location.value.trim(),
-      pricePerHour: Number(form.pricePerHour.value),
-      capacity: Number(form.capacity.value),
-      availableSlots: form.availableSlots.value
-        .split(",")
-        .map((slot) => slot.trim())
-        .filter(Boolean),
-      description: form.description.value.trim(),
-    };
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const photo = form.photo.value.trim();
+    const password = form.password.value;
+    const confirmPassword = form.confirmPassword.value;
 
-    if (updatedFacility.pricePerHour <= 0) {
-      toast.error("Price per hour must be greater than 0");
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
       return;
     }
 
-    if (updatedFacility.capacity <= 0) {
-      toast.error("Capacity must be greater than 0");
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
       return;
     }
 
-    if (updatedFacility.availableSlots.length === 0) {
-      toast.error("Please add at least one available time slot");
+    if (!/[A-Z]/.test(password)) {
+      toast.error("Password must contain at least one uppercase letter");
+      return;
+    }
+
+    if (!/[a-z]/.test(password)) {
+      toast.error("Password must contain at least one lowercase letter");
       return;
     }
 
     try {
-      setUpdating(true);
+      setRegistering(true);
 
-      await axiosSecure.patch(
-        `/facilities/${id}`,
-        updatedFacility,
-      );
+      const result = await createUser(name, email, password, photo);
 
-      toast.success("Facility updated successfully");
+      if (result?.error) {
+        toast.error(result.error.message || "Registration failed");
+        return;
+      }
 
-      navigate("/manage-facilities");
+      toast.success("Registration successful. Please login.");
+      navigate("/login", { replace: true });
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Failed to update facility",
-      );
+      toast.error(error.message || "Registration failed");
     } finally {
-      setUpdating(false);
+      setRegistering(false);
     }
   };
 
-  if (loading) {
-    return <Loading />;
-  }
+  const handleGoogleLogin = async () => {
+    try {
+      setGoogleLoading(true);
 
-  if (!facility) {
-    return (
-      <section className="min-h-screen bg-[#020806] px-4 pt-36 text-white">
-        <div className="mx-auto max-w-4xl">
-          <p className="text-center text-slate-400">
-            Facility not found.
-          </p>
-        </div>
-      </section>
-    );
-  }
+      const result = await googleLogin("/");
+
+      if (result?.error) {
+        toast.error(result.error.message || "Google login failed");
+        setGoogleLoading(false);
+      }
+    } catch (error) {
+      toast.error(error.message || "Google login failed");
+      setGoogleLoading(false);
+    }
+  };
 
   return (
-    <section className="min-h-screen bg-[#020806] px-4 pb-24 pt-36 text-white">
-      <div className="mx-auto max-w-4xl">
-        <BackButton fallback="/manage-facilities" label="Back to Manage Facilities" />
-        <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:p-8">
-        <p className="mb-4 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-          Owner Control
-        </p>
-
-        <h1 className="text-4xl font-black">
-          Update Facility
-        </h1>
-
-        <p className="mt-3 text-slate-400">
-          Update your facility information, pricing and available time slots.
-        </p>
-
-        <form
-          onSubmit={handleUpdate}
-          className="mt-8 grid gap-5 md:grid-cols-2"
+    <section className="min-h-screen bg-[var(--bg)] px-4 py-6 text-[var(--text)] md:py-8">
+      <div className="mx-auto max-w-5xl">
+        <Link
+          to="/"
+          className="mb-5 inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-bold text-[var(--text)] transition hover:border-green-400/40 hover:bg-green-500/10 hover:text-green-400"
         >
-          <Input
-            label="Facility Name"
-            name="name"
-            defaultValue={facility.name}
-          />
+          <ArrowLeft size={18} />
+          Back Home
+        </Link>
 
-          <Input
-            label="Image URL"
-            name="image"
-            type="url"
-            defaultValue={facility.image}
-          />
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+          {/* LEFT SIDE */}
+          <div>
+            <p className="mb-3 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-green-400">
+              Join SportNest
+            </p>
 
-          <Input
-            label="Location"
-            name="location"
-            defaultValue={facility.location}
-          />
+            <h1 className="text-3xl font-black uppercase leading-tight md:text-4xl">
+              Create Your Account
+            </h1>
 
-          <Input
-            label="Price Per Hour"
-            name="pricePerHour"
-            type="number"
-            min="1"
-            defaultValue={facility.pricePerHour}
-          />
+            <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--muted)]">
+              Explore sports facilities, make reservations and manage your own
+              facility listings from one place.
+            </p>
 
-          <Input
-            label="Capacity"
-            name="capacity"
-            type="number"
-            min="1"
-            defaultValue={facility.capacity}
-          />
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                <h3 className="font-black text-green-400">
+                  Book Facilities
+                </h3>
 
-          <Input
-            label="Available Time Slots"
-            name="availableSlots"
-            defaultValue={
-              Array.isArray(facility.availableSlots)
-                ? facility.availableSlots.join(", ")
-                : ""
-            }
-          />
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                  Select a date, choose an available slot and reserve your
+                  preferred facility.
+                </p>
+              </div>
 
-          <label>
-            <span className="text-sm font-bold text-slate-300">
-              Facility Type
-            </span>
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                <h3 className="font-black text-green-400">
+                  List Facilities
+                </h3>
 
-            <select
-              name="type"
-              required
-              defaultValue={facility.type}
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07110b] px-4 py-4 text-slate-300 outline-none transition focus:border-green-400/50"
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                  Add and manage your own sports facilities after signing in.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* REGISTER CARD */}
+          <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:p-6">
+            <h2 className="text-2xl font-black">Register</h2>
+
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              Enter your information to create a SportNest account.
+            </p>
+
+            <form onSubmit={handleRegister} className="mt-5 space-y-3">
+              <Input
+                icon={User}
+                name="name"
+                label="Name"
+                placeholder="Your name"
+              />
+
+              <Input
+                icon={Mail}
+                name="email"
+                label="Email"
+                type="email"
+                placeholder="you@example.com"
+              />
+
+              <Input
+                icon={Image}
+                name="photo"
+                label="Photo URL"
+                type="url"
+                placeholder="https://example.com/photo.jpg"
+              />
+
+              {/* PASSWORD */}
+              <label className="block">
+                <span className="text-sm font-bold text-[var(--text)]">
+                  Password
+                </span>
+
+                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 transition focus-within:border-green-400/50">
+                  <Lock size={18} className="text-green-400" />
+
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    placeholder="At least 6 characters"
+                    className="w-full min-w-0 bg-transparent text-[var(--text)] outline-none placeholder:text-[var(--muted)]"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--muted)] transition hover:bg-green-500/10 hover:text-green-400"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                </div>
+              </label>
+
+              {/* CONFIRM PASSWORD */}
+              <label className="block">
+                <span className="text-sm font-bold text-[var(--text)]">
+                  Confirm Password
+                </span>
+
+                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 transition focus-within:border-green-400/50">
+                  <Lock size={18} className="text-green-400" />
+
+                  <input
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    placeholder="Confirm your password"
+                    className="w-full min-w-0 bg-transparent text-[var(--text)] outline-none placeholder:text-[var(--muted)]"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword((value) => !value)
+                    }
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--muted)] transition hover:bg-green-500/10 hover:text-green-400"
+                    aria-label={
+                      showConfirmPassword
+                        ? "Hide confirm password"
+                        : "Show confirm password"
+                    }
+                    title={
+                      showConfirmPassword
+                        ? "Hide confirm password"
+                        : "Show confirm password"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                </div>
+              </label>
+
+              {/* PASSWORD RULES */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+                <p className="text-xs leading-5 text-[var(--muted)]">
+                  Password must contain at least{" "}
+                  <span className="font-bold text-[var(--text)]">
+                    6 characters
+                  </span>
+                  , one{" "}
+                  <span className="font-bold text-[var(--text)]">
+                    uppercase
+                  </span>{" "}
+                  letter and one{" "}
+                  <span className="font-bold text-[var(--text)]">
+                    lowercase
+                  </span>{" "}
+                  letter.
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={registering}
+                className="w-full rounded-xl bg-green-500 py-3.5 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {registering ? "Creating Account..." : "Create Account"}
+              </button>
+            </form>
+
+            {/* DIVIDER */}
+            <div className="my-5 flex items-center gap-4">
+              <div className="h-px flex-1 bg-[var(--border)]" />
+
+              <span className="text-xs font-bold text-[var(--muted)]">
+                OR
+              </span>
+
+              <div className="h-px flex-1 bg-[var(--border)]" />
+            </div>
+
+            {/* GOOGLE */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              disabled={googleLoading}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] py-3 font-bold text-[var(--text)] transition hover:border-green-400/40 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <option value="Football">Football</option>
-              <option value="Swimming">Swimming</option>
-              <option value="Badminton">Badminton</option>
-              <option value="Tennis">Tennis</option>
-              <option value="Cricket">Cricket</option>
-              <option value="Gym">Gym</option>
-            </select>
-          </label>
+              <FaGoogle size={19} />
 
-          <label className="md:col-span-2">
-            <span className="text-sm font-bold text-slate-300">
-              Description
-            </span>
+              {googleLoading
+                ? "Connecting..."
+                : "Continue with Google"}
+            </button>
 
-            <textarea
-              name="description"
-              rows="5"
-              required
-              defaultValue={facility.description}
-              className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
-            />
-          </label>
-
-          <button
-            type="submit"
-            disabled={updating}
-            className="rounded-2xl bg-green-500 py-4 font-black text-white transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
-          >
-            {updating
-              ? "Updating..."
-              : "Update Facility"}
-          </button>
-        </form>
+            <p className="mt-4 text-center text-sm text-[var(--muted)]">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-bold text-green-400 transition hover:text-green-300"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -227,26 +320,29 @@ const UpdateFacility = () => {
 };
 
 const Input = ({
-  label,
+  icon: Icon,
   name,
-  defaultValue,
+  label,
   type = "text",
-  min,
+  placeholder,
 }) => (
-  <label>
-    <span className="text-sm font-bold text-slate-300">
+  <label className="block">
+    <span className="text-sm font-bold text-[var(--text)]">
       {label}
     </span>
 
-    <input
-      name={name}
-      type={type}
-      min={min}
-      defaultValue={defaultValue}
-      required
-      className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 outline-none transition focus:border-green-400/50 focus:bg-white/[0.07]"
-    />
+    <div className="mt-2 flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 transition focus-within:border-green-400/50">
+      <Icon size={18} className="shrink-0 text-green-400" />
+
+      <input
+        name={name}
+        type={type}
+        required
+        placeholder={placeholder}
+        className="w-full min-w-0 bg-transparent text-[var(--text)] outline-none placeholder:text-[var(--muted)]"
+      />
+    </div>
   </label>
 );
 
-export default UpdateFacility;
+export default Register;

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import EmptyState from "./EmptyState";
 import FacilityCard from "./FacilityCard";
 import Loading from "./Loading";
+import { normalizeFacilities } from "../utils/facility";
 
 const FeaturedFacilities = () => {
   const [facilities, setFacilities] = useState([]);
@@ -17,7 +18,7 @@ const FeaturedFacilities = () => {
         setErrorMessage("");
 
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/facilities`
+          `${import.meta.env.VITE_API_URL}/facilities`,
         );
 
         if (!response.ok) {
@@ -26,11 +27,14 @@ const FeaturedFacilities = () => {
 
         const data = await response.json();
 
-        setFacilities(data.slice(0, 6));
+        setFacilities(normalizeFacilities(data).slice(0, 6));
       } catch (error) {
         console.error(error);
+
         setFacilities([]);
-        setErrorMessage("Featured facilities could not be loaded. Please try again after the server/database is available.");
+        setErrorMessage(
+          "Featured facilities could not be loaded. Please try again after the server/database is available.",
+        );
       } finally {
         setLoading(false);
       }
@@ -40,19 +44,19 @@ const FeaturedFacilities = () => {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#020806] px-4 py-24 text-white sm:px-6 lg:px-8">
-      <div className="relative mx-auto max-w-7xl">
-        <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+    <section className="relative overflow-hidden bg-[var(--bg)] px-4 py-14 text-[var(--text)] sm:px-6 md:py-16 lg:px-8">
+      <div className="relative mx-auto max-w-6xl">
+        <div className="mb-7 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="mb-3 inline-flex rounded-full border border-green-400/30 bg-green-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
+            <p className="mb-2 inline-flex rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-green-400">
               Popular Choices
             </p>
 
-            <h2 className="text-4xl font-black tracking-tight md:text-5xl">
+            <h2 className="text-3xl font-black tracking-tight md:text-4xl">
               Featured Facilities
             </h2>
 
-            <p className="mt-4 max-w-2xl text-slate-400">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)] md:text-base">
               Explore some of the available sports facilities and book the
               perfect venue for your next game.
             </p>
@@ -60,7 +64,7 @@ const FeaturedFacilities = () => {
 
           <Link
             to="/all-facilities"
-            className="w-fit rounded-2xl bg-green-500 px-6 py-3 font-bold text-white transition hover:bg-green-400"
+            className="w-fit rounded-xl bg-green-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-green-400"
           >
             View All Facilities
           </Link>
@@ -74,7 +78,7 @@ const FeaturedFacilities = () => {
             message={errorMessage}
           />
         ) : facilities.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {facilities.map((facility) => (
               <FacilityCard
                 key={facility._id}
