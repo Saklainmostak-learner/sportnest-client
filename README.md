@@ -1,3 +1,7 @@
+## Project Preview
+
+![Homepage Screenshot](./homepageS.png)
+
 # SportNest
 
 SportNest is a full-stack sports facility booking platform built with the MERN Stack and Better Auth. Users can browse sports facilities, search and filter venues, book available time slots, manage their own bookings, and add or manage facilities they own.
